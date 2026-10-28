@@ -9,6 +9,17 @@
   --muted: #52677d;
   --white: #fff;
 }
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0 !important;
+}
 * {
   box-sizing: border-box;
 }
@@ -1129,5 +1140,257 @@ h2[tabindex="-1"]:focus {
   .share > .share-grid,
   .share-grid > .paper[data-print-ready="true"] {
     display: block !important;
+  }
+}
+/* Local v2 refinement: a compact, purposeful stop overview. Screen-only changes
+   keep the explicit print allowlist and exported note typography unchanged. */
+@media screen {
+  .reset {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .primary,
+  .secondary {
+    min-height: 44px;
+  }
+  html {
+    scroll-padding-top: 80px;
+  }
+  .workspace-nav {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: #f5f8fb;
+    gap: 24px;
+  }
+  .workspace-nav button {
+    min-height: 52px;
+  }
+  .stage-nav button {
+    min-height: 48px;
+    border-radius: 8px;
+  }
+  .stage-nav button:hover,
+  .stage-nav button:focus-visible {
+    background: #e7eef5;
+  }
+  .stage-nav small {
+    font-size: 12px;
+  }
+  .scene {
+    display: grid;
+    grid-template-columns: minmax(140px, 38%) 1fr;
+    gap: 9px 20px;
+    align-items: center;
+    padding: 17px 25px;
+  }
+  .scene-top {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    min-height: 18px;
+  }
+  .route-art {
+    height: 92px;
+  }
+  .scene-caption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .scene-caption strong {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .scene.previewing {
+    background: #e5eef7;
+    outline: 2px dashed #6e90b6;
+    outline-offset: -5px;
+  }
+  .note-heading {
+    padding: 17px 14px 23px;
+  }
+  .note-heading .eyebrow {
+    display: block;
+    margin-bottom: 9px;
+  }
+  .note-heading h2 {
+    font-size: 22px;
+    max-width: none;
+  }
+  .note-heading p {
+    font-size: 14px;
+  }
+  .context-boundary {
+    display: block;
+    margin-top: 12px;
+  }
+  .related-label {
+    display: block;
+    font-size: 11px;
+    color: #244c7d;
+    margin-top: 3px;
+  }
+  .related-request {
+    border-left: 3px solid #7392b4;
+    padding-left: 12px !important;
+  }
+  .request-summary .status,
+  .status {
+    font-size: 12px;
+  }
+  .stage-check {
+    display: none;
+  }
+  .choice:hover {
+    border-color: #7894b4;
+    background: #f5f8fb;
+  }
+  .choice:focus-within,
+  .share-choice:focus-within {
+    outline: 2px solid #c16819;
+    outline-offset: 3px;
+  }
+  .share-choice {
+    border-radius: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .share-choice:has(input:checked) {
+    background: #eaf2f9;
+    box-shadow: inset 3px 0 #244c7d;
+  }
+  .primary:active,
+  .secondary:active {
+    transform: translateY(1px);
+  }
+  .primary,
+  .secondary,
+  .choice,
+  .workspace-nav button,
+  .stage-nav button {
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+}
+@media screen and (max-width: 760px) {
+  header {
+    padding-left: 14px;
+    padding-right: 14px;
+    gap: 8px;
+  }
+  .brand {
+    flex-shrink: 0;
+  }
+  .local {
+    min-width: 0;
+  }
+  .local > span {
+    flex-shrink: 0;
+  }
+  html {
+    scroll-padding-top: 96px;
+  }
+  .workspace-nav {
+    gap: 0;
+  }
+  .workspace-nav button {
+    min-height: 64px;
+    font-size: 12px;
+    padding: 12px 3px;
+  }
+  .stage-nav {
+    gap: 6px;
+    margin: 18px 0;
+    align-items: stretch;
+  }
+  .stage-nav button {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 6px 3px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  .stage-nav button > span:first-child {
+    width: 27px;
+    height: 27px;
+    margin: 0;
+  }
+  .stage-nav small {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .scene {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px 13px;
+    padding: 15px;
+  }
+  .route-art {
+    display: none;
+  }
+  .scene-caption {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+  .scene-caption strong {
+    font-size: 13px;
+  }
+  .scene-caption > span {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+  .scene-top {
+    font-size: 11px;
+    gap: 12px;
+  }
+  .note-heading {
+    display: none;
+  }
+  .stage-check {
+    display: block;
+    margin-top: 17px;
+    border-left: 3px solid #8d742c;
+    padding: 11px 12px;
+    background: #fcf8ef;
+  }
+  .stage-check summary {
+    cursor: pointer;
+    color: #66501d;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .stage-check summary:focus-visible {
+    outline: 3px solid #c16819;
+    outline-offset: 4px;
+  }
+  .stage-check p {
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  .choice {
+    font-size: 14px;
+    min-height: 52px;
+  }
+  .share-choice {
+    min-height: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary,
+  .choice,
+  .workspace-nav button,
+  .stage-nav button {
+    transition: none;
+  }
+  .primary:active,
+  .secondary:active {
+    transform: none;
   }
 }

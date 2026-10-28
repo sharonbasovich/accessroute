@@ -29,6 +29,7 @@ import {
   validateRecord,
   shareText,
   noteText,
+  affectedStagesByRequestId,
 } from "./model";
 function readState() {
   try {
@@ -230,8 +231,11 @@ function Ledger({ state, setState }) {
     </section>
   );
 }
-function Rehearsal({ state, setState, onLedger }) {
+function Rehearsal({ state, setState, onLedger, previewStage }) {
   const st = stages.find((x) => x.id === state.active);
+  const routeStop = stages.find((x) => x.id === previewStage) || st;
+  const previewing = routeStop.id !== st.id;
+  const currentConflict = conflicts(state).find((x) => x.stage === st.id);
   const stageHeading = useRef(null);
   const previousStage = useRef(st.id);
   useEffect(() => {
@@ -252,17 +256,21 @@ function Rehearsal({ state, setState, onLedger }) {
     <>
       <div className="rehearsal-grid">
         <section className="rehearsal">
-          <div className="scene">
+          <div className={"scene " + (previewing ? "previewing" : "")}>
             <div className="scene-top">
               <span>
-                <MapPin size={15} /> Fictional visit
+                <MapPin size={15} />{" "}
+                {previewing ? "Stop preview — not opened" : "Fictional visit"}
               </span>
-              <span>Stop {i + 1} of 3</span>
+              <span>Stop {stages.indexOf(routeStop) + 1} of 3</span>
             </div>
-            <RouteIllustration stage={i} />
+            <RouteIllustration stage={stages.indexOf(routeStop)} />
             <div className="scene-caption">
-              <span>{st.name}</span>
-              <strong>{st.description}</strong>
+              <span>{routeStop.name}</span>
+              <strong>
+                {routeStop.description}
+                {previewing ? " Choose this stop above to open it." : ""}
+              </strong>
             </div>
           </div>
           <div className="scenario">
@@ -271,6 +279,17 @@ function Rehearsal({ state, setState, onLedger }) {
               {st.title}
             </h2>
             <p>{st.question}</p>
+            <details className="stage-check" key={st.id}>
+              <summary>
+                Question to carry ·{" "}
+                {currentConflict?.title || "Keep the pace yours"}
+              </summary>
+              <p>
+                {currentConflict?.text ||
+                  "You can practice asking for a pause or a written recap. A rehearsal does not arrange a service."}
+              </p>
+              <small>Example question, not a fact about your clinic.</small>
+            </details>
             <fieldset>
               <legend>What would you like to practice?</legend>
               {st.options.map((opt) => (
@@ -340,14 +359,31 @@ function Rehearsal({ state, setState, onLedger }) {
             <span className="small-symbol">
               <ShieldCheck size={21} />
             </span>
-            <h2>Your visit, your terms.</h2>
-            <p>A little preparation can make the next conversation clearer.</p>
+            <span className="eyebrow">At this stop · {st.name}</span>
+            <h2>{currentConflict?.title || "Keep the pace yours."}</h2>
+            <p>
+              {currentConflict?.text ||
+                "You can practice asking for a pause or a written recap. A rehearsal does not arrange a service."}
+            </p>
+            <small className="context-boundary">
+              Example question, not a fact about your clinic.
+            </small>
           </div>
           <div className="request-summary">
             <h3>Your requests</h3>
             {state.requests.map((r) => (
-              <div key={r.id}>
+              <div
+                key={r.id}
+                className={
+                  affectedStagesByRequestId[r.id]?.includes(st.id)
+                    ? "related-request"
+                    : ""
+                }
+              >
                 <span>{r.category}</span>
+                {affectedStagesByRequestId[r.id]?.includes(st.id) ? (
+                  <small className="related-label">Relevant at this stop</small>
+                ) : null}
                 <p>{r.text || "No request entered"}</p>
                 <Status value={r.status} />
               </div>
@@ -608,7 +644,54 @@ export default function App() {
   const [view, setView] = useState("rehearsal");
   const [saveError, setSaveError] = useState(false);
   const [reset, setReset] = useState(false);
+  const [previewStage, setPreviewStage] = useState(null);
+  const previewInput = useRef(null);
+  const hoverQuery = useRef(null);
+  if (!hoverQuery.current)
+    hoverQuery.current = matchMedia("(hover:hover) and (pointer:fine)");
   const heading = useRef(null);
+  function clearPreview() {
+    previewInput.current = null;
+    setPreviewStage(null);
+  }
+  function clearPointerPreview() {
+    if (previewInput.current !== "focus") clearPreview();
+  }
+  function previewStop(id, input) {
+    if (input === "pointer" && previewInput.current === "focus") return;
+    previewInput.current = input;
+    setPreviewStage(id);
+  }
+  function pointerPreview(e, id) {
+    if (
+      e.pointerType === "mouse" &&
+      hoverQuery.current.matches &&
+      previewStage !== id
+    )
+      previewStop(id, "pointer");
+  }
+  useEffect(() => {
+    const clear = clearPreview;
+    window.addEventListener("blur", clear);
+    window.addEventListener("pagehide", clear);
+    window.addEventListener("scroll", clearPointerPreview, { passive: true });
+    window.addEventListener("pointercancel", clearPointerPreview);
+    const hover = hoverQuery.current;
+    const motion = matchMedia("(prefers-reduced-motion:reduce)");
+    hover.addEventListener("change", clear);
+    motion.addEventListener("change", clear);
+    return () => {
+      window.removeEventListener("blur", clear);
+      window.removeEventListener("pagehide", clear);
+      window.removeEventListener("scroll", clearPointerPreview);
+      window.removeEventListener("pointercancel", clearPointerPreview);
+      hover.removeEventListener("change", clear);
+      motion.removeEventListener("change", clear);
+    };
+  }, []);
+  useEffect(() => {
+    clearPreview();
+  }, [view, state.active]);
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
@@ -618,6 +701,7 @@ export default function App() {
     }
   }, [state]);
   function navigate(v) {
+    clearPreview();
     setView(v);
     setTimeout(() => heading.current?.focus(), 0);
   }
@@ -701,7 +785,31 @@ export default function App() {
                 key={s.id}
                 className={state.active === s.id ? "current" : ""}
                 aria-current={state.active === s.id ? "step" : undefined}
-                onClick={() => setState((v) => ({ ...v, active: s.id }))}
+                aria-label={
+                  i +
+                  1 +
+                  " " +
+                  s.name +
+                  ". " +
+                  (state.visited.includes(s.id)
+                    ? "Rehearsed"
+                    : state.active === s.id
+                      ? "You are here"
+                      : "Explore this stop")
+                }
+                aria-describedby={"stage-hint-" + s.id}
+                onPointerEnter={(e) => pointerPreview(e, s.id)}
+                onPointerMove={(e) => pointerPreview(e, s.id)}
+                onPointerLeave={clearPointerPreview}
+                onFocus={() => previewStop(s.id, "focus")}
+                onBlur={clearPreview}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") clearPreview();
+                }}
+                onClick={() => {
+                  clearPreview();
+                  setState((v) => ({ ...v, active: s.id }));
+                }}
               >
                 <span>
                   {state.visited.includes(s.id) ? <Check size={16} /> : i + 1}
@@ -716,10 +824,21 @@ export default function App() {
                         : "Explore this stop"}
                   </small>
                 </div>
+                <span className="sr-only" id={"stage-hint-" + s.id}>
+                  {s.description} Activate to open this stop. Previewing does
+                  not save a choice.
+                </span>
                 {i < 2 ? <div className="stage-line" /> : null}
               </button>
             ))}
           </nav>
+        ) : null}
+        {view === "rehearsal" ? (
+          <p className="sr-only" role="status" aria-atomic="true">
+            {previewStage && previewStage !== state.active
+              ? `Previewing ${stages.find((s) => s.id === previewStage).name}. ${stages.find((s) => s.id === state.active).name} is still open. Activate the previewed stop to open it.`
+              : `Rehearsing ${stages.find((s) => s.id === state.active).name}.`}
+          </p>
         ) : null}
         {saveError ? (
           <p role="alert" className="error">
@@ -748,6 +867,7 @@ export default function App() {
           <Rehearsal
             state={state}
             setState={setState}
+            previewStage={previewStage}
             onLedger={() => navigate("ledger")}
           />
         )}
