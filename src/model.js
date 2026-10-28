@@ -114,7 +114,7 @@ export function updateRequest(state, id, patch) {
 export function validateRecord(status, source, scope) {
   return (
     !["confirmed", "unavailable"].includes(status) ||
-    Boolean(source.trim() && scope.trim())
+    Boolean(noteText(source) && noteText(scope))
   );
 }
 export function conflicts(state) {
