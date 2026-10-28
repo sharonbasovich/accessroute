@@ -176,6 +176,12 @@ test("responsive viewport, native scroll navigation, selected contrast and page 
     ).toBe(true);
     await page.screenshot({ path: `evidence/v2-${width}-viewport.png` });
     await page.mouse.wheel(0, 500);
+    // Native wheel scrolling is asynchronous; observe settlement before measuring.
+    await expect
+      .poll(() =>
+        page.locator(".workspace-nav").evaluate((e) => e.getBoundingClientRect().top),
+      )
+      .toBeLessThan(2);
     expect(
       await page
         .locator(".workspace-nav")
