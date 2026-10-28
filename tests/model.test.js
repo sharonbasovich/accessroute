@@ -199,3 +199,38 @@ test("changed wording clears evidence even if a combined patch carries stale con
   assert.equal(next.requests[0].source, "");
   assert.equal(next.requests[0].scope, "");
 });
+
+// Evidence must survive the same canonicalization used by preview and export.
+test("recorded evidence requires exportable source and scope", () => {
+  for (const status of ["confirmed", "unavailable"]) {
+    for (const empty of [
+      "\u202e\u202c",
+      "\u2066\u2069",
+      "\u0000\u0007",
+      " \t\u202e ",
+    ]) {
+      assert.equal(validateRecord(status, empty, "Demo visit"), false);
+      assert.equal(validateRecord(status, "Fictional email", empty), false);
+      for (const field of ["source", "scope"]) {
+        const s = seed();
+        Object.assign(s.requests[0], {
+          status,
+          source: "Fictional email",
+          scope: "Demo visit",
+          [field]: empty,
+        });
+        assert.deepEqual(load({ getItem: () => JSON.stringify(s) }), seed());
+      }
+    }
+    assert.equal(
+      validateRecord(
+        status,
+        "\u202e中文 café\u202c",
+        "\u2066Demo 👋 visit\u2069",
+      ),
+      true,
+    );
+  }
+  assert.equal(validateRecord("requested", "", ""), true);
+  assert.equal(validateRecord("unconfirmed", "", ""), true);
+});
