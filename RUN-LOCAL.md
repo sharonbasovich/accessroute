@@ -1,7 +1,5 @@
-# Run the included build
+# Run the free local prototype
 
-Use Node 20.19+ or 22.12+. Extract the prototype ZIP, open a terminal in its folder, and run `node serve.mjs`. Open http://127.0.0.1:4173. No npm install is required for the included production build. Ctrl+C stops the loopback-only server.
+Download the v0.2.0 prototype ZIP and verify it with SHA256SUMS.txt. Extract it, open a terminal beside serve.mjs, and run `node serve.mjs` with Node 20.19+ or 22.12+. Open http://127.0.0.1:4173/ . The packaged production build needs no npm install or account. Ctrl+C stops the loopback-only server. An optional free port can be set through ACCESSROUTE_PORT.
 
-Use synthetic data. Browser storage is unencrypted. Exports remain after reset. This prototype does not verify clinic arrangements or provide medical advice.
-
-Rebuild: `npm ci` then `npm run build`. Development: `npm run dev`. Model checks: `npm test`. Browser checks: `npm run test:e2e`.
+The server exposes only dist/. Source, notes and test artifacts are not served. Use synthetic details only. No hosting, clinic connection, video or event submission is included. See README.md for privacy and limitations; earlier v0.1.0 recordings show the historical interface.

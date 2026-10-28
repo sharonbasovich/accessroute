@@ -16,6 +16,14 @@ npm start
 
 For development: `npm run dev`, then http://127.0.0.1:5173.
 
+## What changed in v0.2.0
+
+The working rehearsal now has a compact stop overview, transient hover/keyboard previews, current-stop questions, a native mobile question disclosure, persistent workspace navigation and clearer selective-sharing feedback. Previewing a stop never saves a response, changes progress or changes the exported note. Opening a stop still requires click, Enter or tap. Pointer/focus interruption behavior and announcements distinguish a preview from the stop currently open. Controls retain explicit keyboard and touch access, reduced motion and a calm visual hierarchy.
+
+Existing screenshots or demo recordings made with v0.1.0 show the earlier interface. They do not depict v0.2.0, and were not replaced or relabelled as new footage. This source/prototype release includes no video or narration. The v0.1.0 release remains available unchanged.
+
+See [release notes](docs/RELEASE-NOTES.md) and [validation notes](docs/VALIDATION.md).
+
 ## A complete rehearsal
 
 1. Edit communication, sensory and mobility requests.
