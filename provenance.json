@@ -1,0 +1,11 @@
+{
+  "project": "AccessRoute",
+  "version": "0.2.1",
+  "source_repository": "https://github.com/sharonbasovich/accessroute",
+  "source_commit": "90c1002253cf7c674a994ef0bada41e565bb687a",
+  "source_tree": "35acda07ac5f35fcc1d16590d6b517154c8aab95",
+  "build_command": "npm run build -- --base=/accessroute/",
+  "deployment_base": "/accessroute/",
+  "kind": "Synthetic nonclinical static prototype",
+  "media": "No media included; historical footage depicts v0.1.0."
+}
