@@ -1,0 +1,25 @@
+{
+  "name": "accessroute",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "test": "node --test tests/model.test.js",
+    "test:e2e": "playwright test",
+    "start": "node serve.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "0.468.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.56.1",
+    "@vitejs/plugin-react": "5.1.1",
+    "prettier": "^3.6.2",
+    "vite": "7.2.2"
+  }
+}
