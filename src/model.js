@@ -114,7 +114,10 @@ export function updateRequest(state, id, patch) {
 export function validateRecord(status, source, scope) {
   return (
     !["confirmed", "unavailable"].includes(status) ||
-    Boolean(noteText(source) && noteText(scope))
+    // Presence only: do not strip meaningful joiners/marks from stored or exported text.
+    [source, scope].every((text) =>
+      /[^\p{White_Space}\p{Default_Ignorable_Code_Point}]/u.test(noteText(text)),
+    )
   );
 }
 export function conflicts(state) {

@@ -200,15 +200,21 @@ test("control-only evidence cannot be saved; corrected multilingual evidence sur
     await page.getByRole("button", { name: "Save record" }).click();
     await expect(page.getByRole("alert")).toContainText("Add both a source");
     await expect(page.locator(".record-form")).toBeVisible();
+    await page.getByLabel("Source of the record").fill("\u200b");
+    await page.getByRole("button", { name: "Save record" }).click();
+    await expect(page.getByRole("alert")).toContainText("Add both a source");
     await page
       .getByLabel("Source of the record")
-      .fill("\u202e中文 café email\u202c");
+      .fill("\u202e中文 café می\u200cخواهم email\u202c");
     await page.getByLabel("Visit or area covered").fill("\u2066\u2069");
+    await page.getByRole("button", { name: "Save record" }).click();
+    await expect(page.getByRole("alert")).toContainText("Add both a source");
+    await page.getByLabel("Visit or area covered").fill("\u200b");
     await page.getByRole("button", { name: "Save record" }).click();
     await expect(page.getByRole("alert")).toContainText("Add both a source");
     await page
       .getByLabel("Visit or area covered")
-      .fill("\u2066Demo 👋 visit\u2069");
+      .fill("\u2066Demo 👩\u200d⚕️ visit\u2069");
     await page.getByRole("button", { name: "Save record" }).click();
     await expect(page.locator(".record-form")).toHaveCount(0);
     await page.reload();
@@ -216,8 +222,8 @@ test("control-only evidence cannot be saved; corrected multilingual evidence sur
     await page.getByRole("checkbox").first().check();
     await page.getByRole("button", { name: "Preview selected note" }).click();
     const note = await page.locator("#export-note").innerText();
-    expect(note).toContain("Recorded source: 中文 café email");
-    expect(note).toContain("Scope: Demo 👋 visit");
+    expect(note).toContain("Recorded source: 中文 café می\u200cخواهم email");
+    expect(note).toContain("Scope: Demo 👩\u200d⚕️ visit");
     expect(note).not.toMatch(/[\u202a-\u202e\u2066-\u2069]/);
     const pending = page.waitForEvent("download");
     await page.getByRole("button", { name: "Download text" }).click();
@@ -226,5 +232,25 @@ test("control-only evidence cannot be saved; corrected multilingual evidence sur
     await page
       .getByRole("button", { name: "Confirmation ledger", exact: true })
       .click();
+  }
+});
+
+test("restored ignorable-only evidence cannot retain a recorded status", async ({ page }) => {
+  for (const status of ["confirmed", "unavailable"]) {
+    for (const field of ["source", "scope"]) {
+      const s = seed();
+      Object.assign(s.requests[0], {
+        status,
+        source: "Synthetic persisted source",
+        scope: "Synthetic arrival",
+        [field]: "\u200b",
+      });
+      await install(page, s);
+      await page.getByRole("button", { name: "Confirmation ledger", exact: true }).click();
+      await expect(page.locator(".ledger-row").first()).toContainText("My request");
+      await expect(page.locator(".ledger-row").first()).not.toContainText("Synthetic persisted source");
+      const restoredStatus = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).requests[0].status, KEY);
+      expect(restoredStatus).toBe("requested");
+    }
   }
 });
