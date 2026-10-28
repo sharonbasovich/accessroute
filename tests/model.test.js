@@ -208,6 +208,11 @@ test("recorded evidence requires exportable source and scope", () => {
       "\u2066\u2069",
       "\u0000\u0007",
       " \t\u202e ",
+      "\u200b",
+      "\u200c\u200d",
+      "\u2060\ufe0f",
+      "\u034f\u00ad",
+      " \u200b\u200d ",
     ]) {
       assert.equal(validateRecord(status, empty, "Demo visit"), false);
       assert.equal(validateRecord(status, "Fictional email", empty), false);
@@ -233,4 +238,20 @@ test("recorded evidence requires exportable source and scope", () => {
   }
   assert.equal(validateRecord("requested", "", ""), true);
   assert.equal(validateRecord("unconfirmed", "", ""), true);
+});
+
+test("evidence presence preserves meaningful joiners and combining text through load and export", () => {
+  for (const text of ["می\u200cخواهم", "क्\u200dष", "cafe\u0301", "👩\u200d⚕️", "中文"]) {
+    for (const status of ["confirmed", "unavailable"]) {
+      assert.equal(validateRecord(status, text, text), true);
+      const s = seed();
+      Object.assign(s.requests[0], { status, source: text, scope: text });
+      const restored = load({ getItem: () => JSON.stringify(s) });
+      assert.equal(restored.requests[0].source, text);
+      assert.equal(restored.requests[0].scope, text);
+      const exported = shareText(restored, ["communication"]);
+      assert.ok(exported.includes("Recorded source: " + text));
+      assert.ok(exported.includes("Scope: " + text));
+    }
+  }
 });
