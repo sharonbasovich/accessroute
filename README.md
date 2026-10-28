@@ -16,13 +16,27 @@ npm start
 
 For development: `npm run dev`, then http://127.0.0.1:5173.
 
-## What changed in v0.2.0
+## v0.2.1 fix release preparation
+
+The current source rejects self-recorded evidence whose source or scope becomes empty after the same normalization used by preview and export. Meaningful multilingual text remains supported. Vite is pinned to 7.3.7, with refreshed dependency notices, and CI checks both the development server and the production static build. This metadata/docs revision adds no feature or interface change. See [release notes](docs/RELEASE-NOTES.md) and [validation evidence](docs/VALIDATION.md).
+
+The v0.2.1 source is being prepared for a separate free prototype release; this change does not publish its ZIP or tag. The existing v0.1.0 and v0.2.0 releases remain unchanged.
+
+## Rehearsal workspace introduced in v0.2.0
 
 The working rehearsal now has a compact stop overview, transient hover/keyboard previews, current-stop questions, a native mobile question disclosure, persistent workspace navigation and clearer selective-sharing feedback. Previewing a stop never saves a response, changes progress or changes the exported note. Opening a stop still requires click, Enter or tap. Pointer/focus interruption behavior and announcements distinguish a preview from the stop currently open. Controls retain explicit keyboard and touch access, reduced motion and a calm visual hierarchy.
 
-Existing screenshots or demo recordings made with v0.1.0 show the earlier interface. They do not depict v0.2.0, and were not replaced or relabelled as new footage. This source/prototype release includes no video or narration. The v0.1.0 release remains available unchanged.
+Existing screenshots or demo recordings made with v0.1.0 show the earlier interface. They do not depict v0.2.x, and were not replaced or relabelled as new footage. No video or narration is included in this source update.
 
 See [release notes](docs/RELEASE-NOTES.md) and [validation notes](docs/VALIDATION.md).
+
+## Standalone static demo (planned)
+
+No public AccessRoute demo URL has been verified yet. A standalone static deployment is planned separately from this source update. The design and browser-only workflow are retained: no account, API, runtime secret or patient data is needed.
+
+For a GitHub Pages project path, build separately with `npm run build -- --base=/accessroute/ --outDir ../accessroute-pages-build`. Serve that output at `/accessroute/`; do not upload the root-path local build unchanged there. Keep the normal `npm run build` output for the downloadable loopback prototype. A local subpath build passed the same 22 browser checks and six adversarial PDF cases with test entry URLs adapted to the project path. This is not evidence that a public deployment is live. Actual public assets, interaction and print privacy must be verified after deployment.
+
+Static hosts do not run `serve.mjs` or automatically inherit its response headers. Hosting providers can log ordinary web requests; app inputs remain in the browser. Use synthetic details only. GitHub Pages projects under the same account share an origin and browser storage is unencrypted.
 
 ## A complete rehearsal
 
@@ -46,4 +60,4 @@ This is an unvalidated, nonclinical prototype. It does not diagnose, advise on m
 
 Tests write local artifacts into ignored `evidence/` and `output/` folders. Automated checks do not establish complete accessibility or clinical effectiveness. See [validation notes](docs/VALIDATION.md).
 
-React, Vite and Lucide React form the component/tooling foundation. The interface and route illustration are original. AI assisted implementation and bounded code review; no AI processes prototype inputs. MIT project license; dependency notices and inventory are included in `licenses/`. No hosted deployment or event submission is part of this source release.
+React, Vite and Lucide React form the component/tooling foundation. The interface and route illustration are original. AI assisted implementation and bounded code review; no AI processes prototype inputs. MIT project license; dependency notices and inventory are included in `licenses/`. This source update does not deploy the app or change an event entry.
