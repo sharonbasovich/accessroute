@@ -23,3 +23,17 @@ jobs:
       - run: npm run test:e2e
       - run: python -m pip install -r scripts/requirements-pdf.txt
       - run: python scripts/check-adversarial-pdfs.py
+      - name: Verify production browser flows and PDFs
+        run: |
+          mv evidence evidence-development
+          mkdir -p evidence
+          node serve.mjs > /tmp/accessroute-production-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent --show-error http://127.0.0.1:4173/ > /dev/null
+          ACCESSROUTE_TEST_URL=http://127.0.0.1:4173 npm run test:e2e
+          python scripts/check-adversarial-pdfs.py
