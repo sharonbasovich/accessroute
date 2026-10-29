@@ -2,10 +2,14 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "4ccb46e7923404628952df3327315da82cf9da19",
-  "source_tree": "b692ef94125f40af3cfc79ff7ad285c2c75eb058",
+  "source_commit": "dff3a03b5f9e246809459b5f8c52345789733e61",
+  "source_tree": "16fc95ed4995b37c8171e9c12ccda5a2a9188b4c",
   "build_command": "npm run build -- --base=/accessroute/",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
-  "media": "No media included; historical footage depicts v0.1.0."
+  "media": "No media included; historical footage depicts v0.1.0.",
+  "source_release": "v0.2.1 remains unchanged; this deployment includes the later reviewed keyboard-focus fix",
+  "retained_assets": [
+    "assets/index-CKyA1yS_.js"
+  ]
 }
