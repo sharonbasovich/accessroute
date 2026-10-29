@@ -8,6 +8,11 @@ for (const action of ["Cancel", "Save record"]) {
     await page
       .getByRole("button", { name: "Confirmation ledger", exact: true })
       .click();
+    // Workspace navigation deliberately moves focus to its heading. Wait for it
+    // before sending a key to a different control.
+    await expect(
+      page.getByRole("heading", { name: "Make the unknowns visible." }),
+    ).toBeFocused();
     for (const index of [0, 1, 2]) {
       const row = page.locator(".ledger-row").nth(index);
       const trigger = row.getByRole("button", { name: "Update record" });
@@ -53,6 +58,9 @@ test("invalid evidence keeps the keyboard user in the open record", async ({
   await page
     .getByRole("button", { name: "Confirmation ledger", exact: true })
     .click();
+  await expect(
+    page.getByRole("heading", { name: "Make the unknowns visible." }),
+  ).toBeFocused();
   await page.getByRole("button", { name: "Update record" }).first().click();
   await page.getByLabel("Status", { exact: true }).selectOption("confirmed");
   const save = page.getByRole("button", { name: "Save record", exact: true });

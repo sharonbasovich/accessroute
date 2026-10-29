@@ -14,6 +14,28 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Verify hosted source provenance and runtime bytes
+        run: |
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          const base = 'https://sharonbasovich.github.io/accessroute/';
+          const get = async (path) => {
+            const response = await fetch(base + path);
+            if (!response.ok) throw new Error(path + ': HTTP ' + response.status);
+            return response;
+          };
+          const provenance = await (await get('provenance.json')).json();
+          if (provenance.source_commit !== 'dff3a03b5f9e246809459b5f8c52345789733e61'
+              || provenance.source_tree !== '16fc95ed4995b37c8171e9c12ccda5a2a9188b4c')
+            throw new Error('Hosted source provenance does not match the reviewed merge');
+          const html = await (await get('')).text();
+          if (!html.includes('/accessroute/assets/index-DTd3Flm8.js'))
+            throw new Error('Hosted HTML is not using the reviewed bundle');
+          const bytes = Buffer.from(await (await get('assets/index-DTd3Flm8.js')).arrayBuffer());
+          if (createHash('sha256').update(bytes).digest('hex') !== '413ad9707daa6ab984d98ca16429e4eed98877de36edee478e8195fc1c6cb7a0')
+            throw new Error('Hosted runtime hash mismatch');
+          console.log('Reviewed source provenance, HTML and runtime hash verified.');
+          NODE
       - name: Test the public demo with synthetic local browser state
         env:
           ACCESSROUTE_TEST_URL: https://sharonbasovich.github.io
