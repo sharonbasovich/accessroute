@@ -101,17 +101,23 @@ function Preferences({ state, setState, onDone }) {
   );
 }
 function Ledger({ state, setState }) {
+  const recordTrigger = useRef(null);
   const [editing, setEditing] = useState(null);
   const [status, setStatus] = useState("unconfirmed");
   const [source, setSource] = useState("");
   const [scope, setScope] = useState("");
   const [error, setError] = useState("");
-  function start(r) {
+  function start(r, trigger) {
+    recordTrigger.current = trigger;
     setEditing(r.id);
     setStatus(r.status);
     setSource(r.source);
     setScope(r.scope);
     setError("");
+  }
+  function closeEditor() {
+    setEditing(null);
+    recordTrigger.current?.focus();
   }
   function save(e) {
     e.preventDefault();
@@ -130,7 +136,7 @@ function Ledger({ state, setState }) {
           : "",
       }),
     );
-    setEditing(null);
+    closeEditor();
   }
   return (
     <section className="ledger">
@@ -161,7 +167,7 @@ function Ledger({ state, setState }) {
           <button
             className="secondary"
             disabled={!noteText(r.text)}
-            onClick={() => start(r)}
+            onClick={(e) => start(r, e.currentTarget)}
           >
             Update record <ChevronRight size={16} />
           </button>
@@ -219,7 +225,7 @@ function Ledger({ state, setState }) {
                 <button
                   type="button"
                   className="text-button"
-                  onClick={() => setEditing(null)}
+                  onClick={closeEditor}
                 >
                   Cancel
                 </button>
