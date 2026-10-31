@@ -153,13 +153,13 @@ test("storage failures retain usable session with explicit warning", async ({
   await context.close();
 });
 test("corrupt saved data recovers safely", async ({ page }) => {
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.evaluate(() =>
     localStorage.setItem(
       "accessroute.demo.v1",
       '{"version":1,"requests":false}',
     ),
   );
-  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Find your way in." }),
