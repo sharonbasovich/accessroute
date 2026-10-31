@@ -787,7 +787,7 @@ export default function App() {
           <RotateCcw size={16} /> Reset demo
         </button>
       </header>
-      <div className="demo-banner">
+      <div className="demo-banner" role="region" aria-label="Prototype limits">
         Synthetic example · Rehearsal, not medical advice. No clinic details are
         verified.
       </div>

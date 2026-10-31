@@ -16,8 +16,26 @@ jobs:
       - run: mkdir -p evidence
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/storage-tabs.spec.js
+      - name: Verify real hosted subpath build
+        run: |
+          mv evidence evidence-development
+          mkdir -p evidence
+          npm run build -- --base=/accessroute/ --outDir site/accessroute
+          cp LICENSE site/accessroute/
+          cp -R licenses site/accessroute/
+          python -m http.server 4174 --bind 127.0.0.1 --directory site > /tmp/accessroute-hosted.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4174/accessroute/ > /dev/null; then break; fi
+            sleep 1
+          done
+          ACCESSROUTE_TEST_URL=http://127.0.0.1:4174 ACCESSROUTE_ENTRY_PATH=/accessroute/ npx playwright test tests/storage-tabs.spec.js
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: storage-tabs-evidence
-          path: evidence/
+          path: |
+            evidence/
+            evidence-development/
+            site/accessroute/
