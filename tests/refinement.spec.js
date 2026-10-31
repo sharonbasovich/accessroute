@@ -10,6 +10,7 @@ test("route preview is transient; hover, focus, interruption and activation stay
 }) => {
   await page.goto("/");
   await page.getByRole("radio").first().check();
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   const before = await page.evaluate((k) => localStorage.getItem(k), key);
   await page.mouse.wheel(0, -1000);
   await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);

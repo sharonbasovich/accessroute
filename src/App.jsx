@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowLeft,
@@ -717,7 +717,7 @@ export default function App() {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (storageConflict.current) return;
     if (!session.readable) {
       setSaveStatus("session");
@@ -727,6 +727,11 @@ export default function App() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 2000);
     setSaveStatus("saving");
+    function warnPendingSave(event) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+    window.addEventListener("beforeunload", warnPendingSave);
     async function save() {
       try {
         const result = await persistDemo({
@@ -747,12 +752,14 @@ export default function App() {
       } catch {
         if (current && !storageConflict.current) setSaveStatus("session");
       } finally {
+        window.removeEventListener("beforeunload", warnPendingSave);
         clearTimeout(timeout);
       }
     }
     save();
     return () => {
       current = false;
+      window.removeEventListener("beforeunload", warnPendingSave);
       controller.abort();
       clearTimeout(timeout);
     };

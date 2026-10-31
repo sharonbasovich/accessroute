@@ -201,6 +201,14 @@ test("a held lock times out without a late write after release", async ({
   });
   const before = await stored(page);
   await page.locator("#communication").fill("SYNTHETIC QUEUED EDIT");
+  await expect(page.locator(".local")).toHaveText("Saving on this browser…");
+  const dialog = page.waitForEvent("dialog");
+  const reload = page.reload().catch(() => null);
+  const warning = await dialog;
+  expect(warning.type()).toBe("beforeunload");
+  await warning.dismiss();
+  await reload;
+  await expect(page.locator("#communication")).toHaveValue("SYNTHETIC QUEUED EDIT");
   await expect(page.getByRole("alert")).toContainText("only for this session");
   await page.evaluate(() => window.releaseTestLock());
   await page.waitForTimeout(100);

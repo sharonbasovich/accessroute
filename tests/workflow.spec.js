@@ -11,6 +11,7 @@ test("interrupted and repeated rehearsal persists without duplicate progress", a
     page.getByRole("button", { name: "Save & continue" }),
   ).toBeDisabled();
   await page.getByRole("radio").first().check();
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.reload();
   await expect(page.getByRole("radio").first()).toBeChecked();
   await page.getByRole("button", { name: "Save & continue" }).click();
@@ -44,6 +45,7 @@ test("source and scope are required; changed preference invalidates confirmation
     .fill("Fictional reception email");
   await page.getByLabel("Visit or area covered").fill("Demo entrance only");
   await page.getByRole("button", { name: "Save record" }).click();
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.reload();
   await page
     .getByRole("button", { name: "Confirmation ledger", exact: true })
@@ -157,6 +159,7 @@ test("corrupt saved data recovers safely", async ({ page }) => {
       '{"version":1,"requests":false}',
     ),
   );
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Find your way in." }),

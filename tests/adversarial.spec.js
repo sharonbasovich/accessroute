@@ -217,6 +217,7 @@ test("control-only evidence cannot be saved; corrected multilingual evidence sur
       .fill("\u2066Demo 👩\u200d⚕️ visit\u2069");
     await page.getByRole("button", { name: "Save record" }).click();
     await expect(page.locator(".record-form")).toHaveCount(0);
+    await expect(page.locator(".local")).toHaveText("Saved on this browser");
     await page.reload();
     await page.getByRole("button", { name: "Select & share" }).click();
     await page.getByRole("checkbox").first().check();
