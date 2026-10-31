@@ -25,6 +25,11 @@
     "sha256": "9f0d9a9350be4f2b9da54ccaf4d1a587905c8130f7a48a3c5d739003047a649e"
   },
   {
+    "path": "assets/index-D5jXQz8X.js",
+    "bytes": 223322,
+    "sha256": "459a82af44a91cf484716b69e1a9999435544bb713c4b6ecb67c924ed6125799"
+  },
+  {
     "path": "assets/index-DTd3Flm8.js",
     "bytes": 220813,
     "sha256": "413ad9707daa6ab984d98ca16429e4eed98877de36edee478e8195fc1c6cb7a0"
@@ -32,7 +37,7 @@
   {
     "path": "index.html",
     "bytes": 440,
-    "sha256": "6ee6c9d6755a2aaf8078825e0745aebaf2a0d927b9c6fb757994eecd30262984"
+    "sha256": "e8c416c38b7538702873d6e90eff3b57ded4f423472d8251a2575506034c1a57"
   },
   {
     "path": "licenses/THIRD-PARTY-NOTICES.md",
@@ -61,7 +66,7 @@
   },
   {
     "path": "provenance.json",
-    "bytes": 918,
-    "sha256": "7fce9210c3a45741d0209468b76657cd63e0021c183319cc070f7a446029ea23"
+    "bytes": 1020,
+    "sha256": "7f2869db044a4d54014f262f8c7b36d8e0ff8e479f3688090a43092f5d223a42"
   }
 ]
