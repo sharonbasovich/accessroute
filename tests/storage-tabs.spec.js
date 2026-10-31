@@ -23,6 +23,16 @@ test("reset in another tab cannot be resurrected; explicit reload discards only 
   await preferences(a);
   await a.locator("#communication").fill("SYNTHETIC OLD REQUEST");
   await saved(a);
+  await a.evaluate((key) => {
+    const data = JSON.parse(localStorage.getItem(key));
+    data.visited = ["arrival"];
+    data.choices = { arrival: 0 };
+    data.requests[0].status = "confirmed";
+    data.requests[0].source = "SYNTHETIC OLD SOURCE";
+    data.requests[0].scope = "SYNTHETIC OLD SCOPE";
+    localStorage.setItem(key, JSON.stringify(data));
+  }, KEY);
+  await preferences(a);
   const b = await context.newPage();
   await preferences(b);
   await a.getByRole("button", { name: "Reset demo", exact: true }).click();
@@ -32,9 +42,7 @@ test("reset in another tab cannot be resurrected; explicit reload discards only 
   await saved(a);
   await expect(b.getByRole("alert")).toContainText("stopped saving");
   await b.locator("#sensory").fill("SYNTHETIC SESSION DRAFT");
-  await expect
-    .poll(async () => (await stored(a)).requests[0].text)
-    .toBe(seed().requests[0].text);
+  await expect.poll(async () => stored(a)).toEqual(seed());
   await expect(b.locator("#communication")).toHaveValue(
     "SYNTHETIC OLD REQUEST",
   );
