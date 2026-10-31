@@ -108,6 +108,8 @@ function Ledger({ state, setState }) {
   const [scope, setScope] = useState("");
   const [error, setError] = useState("");
   function start(r, trigger) {
+    // Reopening the current row must not replace its unsaved form values.
+    if (editing === r.id) return;
     recordTrigger.current = trigger;
     setEditing(r.id);
     setStatus(r.status);
