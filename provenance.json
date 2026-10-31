@@ -2,14 +2,17 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "dff3a03b5f9e246809459b5f8c52345789733e61",
-  "source_tree": "16fc95ed4995b37c8171e9c12ccda5a2a9188b4c",
-  "build_command": "npm run build -- --base=/accessroute/",
+  "source_commit": "de1e04abf6e73924a6c73d65fd1ae823afc33b11",
+  "source_tree": "846679be042b10b2a76f8ff80b992c988ab63e32",
+  "build_command": "npm run build -- --base=/accessroute/ --outDir site/accessroute",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
   "media": "No media included; historical footage depicts v0.1.0.",
-  "source_release": "v0.2.1 remains unchanged; this deployment includes the later reviewed keyboard-focus fix",
+  "source_release": "v0.2.1 remains unchanged; this deployment includes later reviewed keyboard-focus and stale-tab persistence fixes",
   "retained_assets": [
-    "assets/index-CKyA1yS_.js"
-  ]
+    "assets/index-CKyA1yS_.js",
+    "assets/index-DTd3Flm8.js"
+  ],
+  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/41155472263",
+  "verification_artifact_sha256": "55f1277b9c40964ce4b1544a4c2c45d253c1a5a46ec2fb2320e5b79afd4d3c6c"
 }
