@@ -2,19 +2,20 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "53e74d8be20d4a10f49aa41f83a6c585f0ac213c",
-  "source_tree": "024a2d21f7836002a68b7ca27436242c86031537",
+  "source_commit": "b2eeef67e91e65752eedbbc11352b98e9ceec27d",
+  "source_tree": "fb4c857e896996615eb704e268df102317c69bfc",
   "build_command": "npm run build -- --base=/accessroute/ --outDir site/accessroute",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
   "media": "No media included; historical footage depicts v0.1.0.",
-  "source_release": "v0.2.1 remains unchanged; this deployment includes later reviewed keyboard-focus, stale-tab persistence, and same-row ledger draft preservation fixes",
+  "source_release": "v0.2.1 remains unchanged; this deployment includes later reviewed keyboard-focus, stale-tab persistence, same-row ledger draft preservation, and session-only reset preservation fixes",
   "retained_assets": [
     "assets/index-B5Lp01gR.js",
     "assets/index-CAtRD6i_.css",
     "assets/index-CKyA1yS_.js",
+    "assets/index-D5jXQz8X.js",
     "assets/index-DTd3Flm8.js"
   ],
-  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/41158591625",
-  "verification_artifact_sha256": "c6c22582c9f6ada7bdaeea173cf63bcf8e09f952d3e7a5a42f4f447c08967445"
+  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/41247138528",
+  "verification_artifact_sha256": "9b78a20456e077605a7696f2c7c4ba64d8c776458634a8bad7cdbcb7c20bb545"
 }

@@ -35,9 +35,14 @@
     "sha256": "413ad9707daa6ab984d98ca16429e4eed98877de36edee478e8195fc1c6cb7a0"
   },
   {
+    "path": "assets/index-WkUkCRAt.js",
+    "bytes": 223534,
+    "sha256": "e6e35db27ee5ee63614eff02a9310d32b8475cccbd4bad92c0de360018fca1a7"
+  },
+  {
     "path": "index.html",
     "bytes": 440,
-    "sha256": "e8c416c38b7538702873d6e90eff3b57ded4f423472d8251a2575506034c1a57"
+    "sha256": "424ee3f06808534ab0a5a2955a72dea9927530f222427012347e40a28831eb22"
   },
   {
     "path": "licenses/THIRD-PARTY-NOTICES.md",
@@ -66,7 +71,7 @@
   },
   {
     "path": "provenance.json",
-    "bytes": 1020,
-    "sha256": "7f2869db044a4d54014f262f8c7b36d8e0ff8e479f3688090a43092f5d223a42"
+    "bytes": 1085,
+    "sha256": "61b06f6d1336cbd3c03094fbfb4be54c93567fe87689005fd0f39ba5ea701638"
   }
 ]
