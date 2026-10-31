@@ -653,6 +653,7 @@ export default function App() {
   const [state, setState] = useState(session.state);
   const savedSnapshot = useRef(session.snapshot);
   const storageConflict = useRef(false);
+  const sessionReset = useRef(false);
   const [view, setView] = useState("rehearsal");
   const [saveStatus, setSaveStatus] = useState("saving");
   const [reset, setReset] = useState(false);
@@ -721,7 +722,7 @@ export default function App() {
   }, []);
   useLayoutEffect(() => {
     if (storageConflict.current) return;
-    if (!session.readable) {
+    if (sessionReset.current || !session.readable) {
       setSaveStatus("session");
       return;
     }
@@ -928,8 +929,9 @@ export default function App() {
           </section>
         ) : saveStatus === "session" ? (
           <p role="alert" className="error">
-            Safe browser saving is unavailable. Changes last only for this
-            session. Previously saved data has not been replaced.
+            {sessionReset.current
+              ? "This tab was reset without changing saved browser data. Changes last only for this session. Reload the page to return to the saved copy."
+              : "Safe browser saving is unavailable. Changes last only for this session. Previously saved data has not been replaced."}
           </p>
         ) : null}
         {view === "preferences" ? (
@@ -975,6 +977,8 @@ export default function App() {
           sessionOnly={saveStatus === "conflict" || saveStatus === "session"}
           onCancel={() => setReset(false)}
           onReset={() => {
+            // Honor the session-only reset promise even if storage recovers.
+            if (saveStatus === "session") sessionReset.current = true;
             setState(seed());
             setReset(false);
             navigate("rehearsal");
