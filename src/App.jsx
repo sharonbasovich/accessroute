@@ -728,6 +728,7 @@ export default function App() {
     const timeout = setTimeout(() => controller.abort(), 2000);
     setSaveStatus("saving");
     function warnPendingSave(event) {
+      if (storageConflict.current) return;
       event.preventDefault();
       event.returnValue = "";
     }

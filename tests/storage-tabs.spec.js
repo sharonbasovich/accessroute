@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { KEY, seed } from "../src/model.js";
+import { KEY, seed, stages } from "../src/model.js";
 const entry = process.env.ACCESSROUTE_ENTRY_PATH || "/";
 const saved = (p) =>
   expect(p.locator(".local")).toHaveText("Saved on this browser");
@@ -23,15 +23,15 @@ test("reset in another tab cannot be resurrected; explicit reload discards only 
   await preferences(a);
   await a.locator("#communication").fill("SYNTHETIC OLD REQUEST");
   await saved(a);
-  await a.evaluate((key) => {
+  await a.evaluate(({ key, choice }) => {
     const data = JSON.parse(localStorage.getItem(key));
     data.visited = ["arrival"];
-    data.choices = { arrival: 0 };
+    data.choices = { arrival: choice };
     data.requests[0].status = "confirmed";
     data.requests[0].source = "SYNTHETIC OLD SOURCE";
     data.requests[0].scope = "SYNTHETIC OLD SCOPE";
     localStorage.setItem(key, JSON.stringify(data));
-  }, KEY);
+  }, { key: KEY, choice: stages[0].options[0] });
   await preferences(a);
   const b = await context.newPage();
   await preferences(b);
@@ -46,6 +46,8 @@ test("reset in another tab cannot be resurrected; explicit reload discards only 
   await expect(b.locator("#communication")).toHaveValue(
     "SYNTHETIC OLD REQUEST",
   );
+  await b.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => b.evaluate(() => scrollY)).toBe(0);
   await b.screenshot({
     path: "evidence/storage-conflict-desktop.png",
     fullPage: true,
@@ -56,6 +58,8 @@ test("reset in another tab cannot be resurrected; explicit reload discards only 
   expect(
     await b.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
   ).toBe(true);
+  await b.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => b.evaluate(() => scrollY)).toBe(0);
   await b.screenshot({
     path: "evidence/storage-conflict-mobile.png",
     fullPage: true,
