@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import { seed, stages, KEY } from "../src/model.js";
 async function install(page, state) {
   await page.goto("/");
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.evaluate(
     ({ state, key }) => localStorage.setItem(key, JSON.stringify(state)),
     { state, key: KEY },
@@ -163,6 +164,7 @@ test("rapid stage navigation and repeated finish never manufacture completed sto
     await page.getByRole("button", { name: "Finish rehearsal" }).click();
   }
   await expect(page.locator(".progress-ring")).toHaveText("1/3");
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.reload();
   await expect(page.locator(".progress-ring")).toHaveText("1/3");
 });

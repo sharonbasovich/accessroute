@@ -137,6 +137,7 @@ test("coarse touch has explicit stop selection and nearby expandable question", 
     await expect(detail).not.toHaveAttribute("open", "");
     await waiting(p).tap();
     await expect(p.getByRole("radio").first()).toBeChecked();
+    await expect(p.locator(".local")).toHaveText("Saved on this browser");
     await p.reload();
     await expect(p.getByRole("radio").first()).toBeChecked();
   } finally {
