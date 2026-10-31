@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "test": "node --test tests/model.test.js",
+    "test": "node --test tests/model.test.js tests/persistence.test.js",
     "test:e2e": "playwright test",
     "start": "node serve.mjs"
   },

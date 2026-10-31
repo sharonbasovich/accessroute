@@ -23,7 +23,6 @@ import {
   seed,
   stages,
   labels,
-  load,
   conflicts,
   updateRequest,
   validateRecord,
@@ -31,11 +30,12 @@ import {
   noteText,
   affectedStagesByRequestId,
 } from "./model";
+import { readDemoSession, persistDemo } from "./persistence";
 function readState() {
   try {
-    return load(window.localStorage);
+    return readDemoSession(window.localStorage);
   } catch {
-    return seed();
+    return { state: seed(), snapshot: null, readable: false };
   }
 }
 const icons = {
@@ -337,7 +337,7 @@ function Rehearsal({ state, setState, onLedger, previewStage }) {
                     ”
                   </p>
                   <small>
-                    Practice choice saved privately; excluded from your share
+                    Practice choice kept in this tab; excluded from your share
                     note.
                   </small>
                 </div>
@@ -499,7 +499,7 @@ function RouteIllustration({ stage }) {
     </svg>
   );
 }
-function ResetDialog({ onCancel, onReset }) {
+function ResetDialog({ onCancel, onReset, sessionOnly }) {
   const ref = useRef(null);
   useEffect(() => {
     ref.current.showModal();
@@ -524,8 +524,9 @@ function ResetDialog({ onCancel, onReset }) {
     >
       <h2 id="reset-title">Reset this demo?</h2>
       <p>
-        This replaces saved preferences, records and rehearsal progress with the
-        synthetic starting example. Downloaded copies will remain.
+        {sessionOnly
+          ? "This resets only this tab’s session to the synthetic starting example. Saved browser data is unchanged. Downloaded copies will remain."
+          : "This replaces saved preferences, records and rehearsal progress with the synthetic starting example. Downloaded copies will remain."}
       </p>
       <div className="actions">
         <button autoFocus className="secondary" onClick={onCancel}>
@@ -646,9 +647,12 @@ function Share({ state }) {
   );
 }
 export default function App() {
-  const [state, setState] = useState(readState);
+  const [session] = useState(readState);
+  const [state, setState] = useState(session.state);
+  const savedSnapshot = useRef(session.snapshot);
+  const storageConflict = useRef(false);
   const [view, setView] = useState("rehearsal");
-  const [saveError, setSaveError] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("saving");
   const [reset, setReset] = useState(false);
   const [previewStage, setPreviewStage] = useState(null);
   const previewInput = useRef(null);
@@ -699,13 +703,60 @@ export default function App() {
     clearPreview();
   }, [view, state.active]);
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(state));
-      setSaveError(false);
-    } catch {
-      setSaveError(true);
+    function onStorage(event) {
+      if (event.key !== KEY && event.key !== null) return;
+      try {
+        if (event.storageArea !== window.localStorage) return;
+        if (localStorage.getItem(KEY) === savedSnapshot.current) return;
+        storageConflict.current = true;
+        setSaveStatus("conflict");
+      } catch {
+        if (!storageConflict.current) setSaveStatus("session");
+      }
     }
-  }, [state]);
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+  useEffect(() => {
+    if (storageConflict.current) return;
+    if (!session.readable) {
+      setSaveStatus("session");
+      return;
+    }
+    let current = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    setSaveStatus("saving");
+    async function save() {
+      try {
+        const result = await persistDemo({
+          storage: window.localStorage,
+          locks: navigator.locks,
+          expected: () => savedSnapshot.current,
+          state,
+          signal: controller.signal,
+          isCurrent: () => current && !storageConflict.current,
+          onSaved: (snapshot) => {
+            savedSnapshot.current = snapshot;
+          },
+        });
+        if (!current || result.kind === "cancelled" || storageConflict.current)
+          return;
+        if (result.kind === "conflict") storageConflict.current = true;
+        setSaveStatus(result.kind);
+      } catch {
+        if (current && !storageConflict.current) setSaveStatus("session");
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+    save();
+    return () => {
+      current = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [state, session]);
   function navigate(v) {
     clearPreview();
     setView(v);
@@ -725,7 +776,12 @@ export default function App() {
           AccessRoute<span className="beta">Prototype</span>
         </a>
         <div className="local">
-          <span /> {saveError ? "Session only" : "Saved on this browser"}
+          <span />{" "}
+          {saveStatus === "saved"
+            ? "Saved on this browser"
+            : saveStatus === "saving"
+              ? "Saving on this browser…"
+              : "Session only"}
         </div>
         <button className="text-button reset" onClick={() => setReset(true)}>
           <RotateCcw size={16} /> Reset demo
@@ -846,9 +902,24 @@ export default function App() {
               : `Rehearsing ${stages.find((s) => s.id === state.active).name}.`}
           </p>
         ) : null}
-        {saveError ? (
+        {saveStatus === "conflict" ? (
+          <section className="storage-conflict" aria-label="Saved demo changed">
+            <p role="alert" className="error">
+              Saved demo data changed in another tab or was cleared. This tab
+              has stopped saving to avoid replacing it. Your current work stays
+              here for this session; it is not the latest saved copy.
+            </p>
+            <button
+              className="secondary"
+              onClick={() => window.location.reload()}
+            >
+              Reload saved demo and discard this tab’s changes
+            </button>
+          </section>
+        ) : saveStatus === "session" ? (
           <p role="alert" className="error">
-            Browser storage is unavailable. Changes last only for this session.
+            Safe browser saving is unavailable. Changes last only for this
+            session. Previously saved data has not been replaced.
           </p>
         ) : null}
         {view === "preferences" ? (
@@ -891,6 +962,7 @@ export default function App() {
       </main>
       {reset ? (
         <ResetDialog
+          sessionOnly={saveStatus === "conflict" || saveStatus === "session"}
           onCancel={() => setReset(false)}
           onReset={() => {
             setState(seed());

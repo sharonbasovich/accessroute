@@ -61,3 +61,9 @@ This is an unvalidated, nonclinical prototype. It does not diagnose, advise on m
 Tests write local artifacts into ignored `evidence/` and `output/` folders. Automated checks do not establish complete accessibility or clinical effectiveness. See [validation notes](docs/VALIDATION.md).
 
 React, Vite and Lucide React form the component/tooling foundation. The interface and route illustration are original. AI assisted implementation and bounded code review; no AI processes prototype inputs. MIT project license; dependency notices and inventory are included in `licenses/`. This source update does not deploy the app or change an event entry.
+
+## Cross-tab storage safety
+
+The current source serializes brief storage writes with the browser Web Locks API and checks the saved snapshot before writing. If another tab changes or clears saved data, a stale tab stops saving, keeps its session available and offers an explicit reload that discards that tab’s unsaved changes. It does not silently merge or choose between records. A local reset in a conflicted tab resets only that session. Browsers without Web Locks, failed storage writes or a blocked save use clearly labeled session-only mode and leave prior saved data untouched. This mode still loads readable existing data.
+
+Use only synthetic data. Existing older app tabs do not participate in the new lock and should be closed/reloaded; this is not an encrypted store or protection against other same-origin scripts. Downloads and selective-disclosure rules are unchanged. Baseline Chromium regression reproduced reset resurrection before the fix; new tests cover concurrent edits, cleared storage, explicit reload, unsupported/rejected locks, quota failure and a timed-out lock.
