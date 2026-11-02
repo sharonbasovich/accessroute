@@ -189,6 +189,7 @@ test("keyboard dialog traps focus and newly edited second row is protected", asy
   await page.keyboard.press("Tab");
   await expect(keep).toBeFocused();
   await discard.click();
+  await expect(next).toBeFocused();
   await page.getByLabel("Status", { exact: true }).selectOption("unavailable");
   await page.getByRole("button", { name: "Preferences", exact: true }).click();
   await keep.click();

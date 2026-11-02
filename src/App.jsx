@@ -573,7 +573,13 @@ function DiscardDraftDialog({ onKeep, onDiscard }) {
         <button autoFocus className="secondary" onClick={keep}>
           Keep editing
         </button>
-        <button className="primary" onClick={onDiscard}>
+        <button
+          className="primary"
+          onClick={() => {
+            ref.current.close();
+            onDiscard();
+          }}
+        >
           Discard draft & continue
         </button>
       </div>
