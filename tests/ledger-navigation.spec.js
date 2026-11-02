@@ -129,3 +129,76 @@ test("explicit navigation discard and reset never save draft evidence", async ({
     page.getByRole("heading", { name: "Walk through your next visit." }),
   ).toBeFocused();
 });
+
+test("cancelled native reload retains dirty protection after cross-tab conflict", async ({
+  page,
+  context,
+}) => {
+  await draft(page);
+  const other = await context.newPage();
+  await other.goto(entry);
+  await other.getByRole("button", { name: "Preferences", exact: true }).click();
+  await other.locator("textarea").first().fill("SYNTHETIC OTHER TAB");
+  await expect(other.locator(".local")).toHaveText("Saved on this browser");
+  await expect(
+    page.getByRole("region", { name: "Saved demo changed" }),
+  ).toBeVisible();
+  const reload = page.getByRole("button", {
+    name: "Reload saved demo and discard this tab’s changes",
+  });
+  await reload.click();
+  const dismissed = page.waitForEvent("dialog").then(async (d) => {
+    expect(d.type()).toBe("beforeunload");
+    await d.dismiss();
+  });
+  await page
+    .getByRole("button", { name: "Discard draft & continue", exact: true })
+    .click();
+  await dismissed;
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Keep your unsaved record?" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Keep editing", exact: true }).click();
+  await expect(page.getByLabel("Source of the record")).toHaveValue(
+    "SYNTHETIC DRAFT SOURCE",
+  );
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await reload.click();
+  await expect(
+    page.getByRole("heading", { name: "Walk through your next visit." }),
+  ).toBeVisible();
+});
+
+test("keyboard dialog traps focus and newly edited second row is protected", async ({
+  page,
+}) => {
+  await draft(page);
+  const next = page
+    .getByRole("button", { name: "Update record", exact: true })
+    .nth(1);
+  await next.click();
+  const keep = page.getByRole("button", { name: "Keep editing", exact: true });
+  const discard = page.getByRole("button", {
+    name: "Discard draft & continue",
+    exact: true,
+  });
+  await expect(keep).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(discard).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(keep).toBeFocused();
+  await discard.click();
+  await page.getByLabel("Status", { exact: true }).selectOption("unavailable");
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  await keep.click();
+  await expect(
+    page.getByRole("button", { name: "Preferences", exact: true }),
+  ).toBeFocused();
+  await expect(page.getByLabel("Status", { exact: true })).toHaveValue(
+    "unavailable",
+  );
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
