@@ -546,6 +546,20 @@ function DiscardDraftDialog({ onKeep, onDiscard }) {
         event.preventDefault();
         keep();
       }}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const buttons = ref.current.querySelectorAll("button");
+        if (event.shiftKey && document.activeElement === buttons[0]) {
+          event.preventDefault();
+          buttons[buttons.length - 1].focus();
+        } else if (
+          !event.shiftKey &&
+          document.activeElement === buttons[buttons.length - 1]
+        ) {
+          event.preventDefault();
+          buttons[0].focus();
+        }
+      }}
       aria-labelledby="discard-draft-title"
       aria-describedby="discard-draft-description"
     >
