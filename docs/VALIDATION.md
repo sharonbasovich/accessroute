@@ -14,3 +14,10 @@ These checks are software evidence, not clinical validation, a formal security a
 
 The CI workflow has read-only repository permissions and runs model/build/browser/PDF checks. Local results do not establish remote CI success; inspect the workflow for the exact published commit. Private review correspondence, machine/session files, owner paths and unauditioned media are excluded.
 
+
+
+## Unsaved confirmation-record navigation guard
+
+A public-browser check reproduced loss of an unsaved source/scope when switching ledger rows. The candidate asks before changing rows or workspace views when a record differs from its saved values. Keep editing is the default, Escape keeps the draft, and explicit discard does not save evidence. Reset explicitly describes draft loss. Browser leave-page warnings are best-effort; force close/device termination can still lose drafts.
+
+Regression coverage includes desktop and375px reduced-motion cases, repeated Keep editing/Discard, Save and Cancel, export exclusion, reset cancellation, modal keyboard focus and a cancelled native reload after a cross-tab conflict. Automated scans are not a full accessibility assessment.

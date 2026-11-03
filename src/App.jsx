@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowRight,
   ArrowLeft,
@@ -100,22 +106,44 @@ function Preferences({ state, setState, onDone }) {
     </section>
   );
 }
-function Ledger({ state, setState }) {
+function Ledger({ state, setState, confirmDiscard, onDirtyChange }) {
   const recordTrigger = useRef(null);
   const [editing, setEditing] = useState(null);
   const [status, setStatus] = useState("unconfirmed");
   const [source, setSource] = useState("");
   const [scope, setScope] = useState("");
   const [error, setError] = useState("");
+  const saved = state.requests.find((r) => r.id === editing);
+  const dirty = Boolean(
+    saved &&
+      (status !== saved.status ||
+        source !== saved.source ||
+        scope !== saved.scope),
+  );
+  useLayoutEffect(() => {
+    onDirtyChange(dirty);
+    return () => onDirtyChange(false);
+  }, [dirty, onDirtyChange]);
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
   function start(r, trigger) {
     // Reopening the current row must not replace its unsaved form values.
     if (editing === r.id) return;
-    recordTrigger.current = trigger;
-    setEditing(r.id);
-    setStatus(r.status);
-    setSource(r.source);
-    setScope(r.scope);
-    setError("");
+    confirmDiscard(() => {
+      recordTrigger.current = trigger;
+      setEditing(r.id);
+      setStatus(r.status);
+      setSource(r.source);
+      setScope(r.scope);
+      setError("");
+    });
   }
   function closeEditor() {
     setEditing(null);
@@ -501,6 +529,63 @@ function RouteIllustration({ stage }) {
     </svg>
   );
 }
+function DiscardDraftDialog({ onKeep, onDiscard }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current.showModal();
+  }, []);
+  function keep() {
+    ref.current.close();
+    onKeep();
+  }
+  return (
+    <dialog
+      ref={ref}
+      className="modal"
+      onCancel={(event) => {
+        event.preventDefault();
+        keep();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const buttons = ref.current.querySelectorAll("button");
+        if (event.shiftKey && document.activeElement === buttons[0]) {
+          event.preventDefault();
+          buttons[buttons.length - 1].focus();
+        } else if (
+          !event.shiftKey &&
+          document.activeElement === buttons[buttons.length - 1]
+        ) {
+          event.preventDefault();
+          buttons[0].focus();
+        }
+      }}
+      aria-labelledby="discard-draft-title"
+      aria-describedby="discard-draft-description"
+    >
+      <h2 id="discard-draft-title">Keep your unsaved record?</h2>
+      <p id="discard-draft-description">
+        Your record changes have not been saved. Keep editing to finish them, or
+        discard this draft to continue. Previously saved records will not
+        change.
+      </p>
+      <div className="actions">
+        <button autoFocus className="secondary" onClick={keep}>
+          Keep editing
+        </button>
+        <button
+          className="primary"
+          onClick={() => {
+            ref.current.close();
+            onDiscard();
+          }}
+        >
+          Discard draft & continue
+        </button>
+      </div>
+    </dialog>
+  );
+}
 function ResetDialog({ onCancel, onReset, sessionOnly }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -527,8 +612,8 @@ function ResetDialog({ onCancel, onReset, sessionOnly }) {
       <h2 id="reset-title">Reset this demo?</h2>
       <p>
         {sessionOnly
-          ? "This resets only this tab’s session to the synthetic starting example. Saved browser data is unchanged. Downloaded copies will remain."
-          : "This replaces saved preferences, records and rehearsal progress with the synthetic starting example. Downloaded copies will remain."}
+          ? "This discards any unsaved record draft and resets only this tab’s session to the synthetic starting example. Saved browser data is unchanged. Downloaded copies will remain."
+          : "This discards any unsaved record draft and replaces saved preferences, records and rehearsal progress with the synthetic starting example. Downloaded copies will remain."}
       </p>
       <div className="actions">
         <button autoFocus className="secondary" onClick={onCancel}>
@@ -657,6 +742,24 @@ export default function App() {
   const [view, setView] = useState("rehearsal");
   const [saveStatus, setSaveStatus] = useState("saving");
   const [reset, setReset] = useState(false);
+  const dirtyRecord = useRef(false);
+  const onDirtyRecordChange = useCallback((value) => {
+    dirtyRecord.current = value;
+  }, []);
+  const [discardAction, setDiscardAction] = useState(null);
+  const discardTrigger = useRef(null);
+  function confirmDiscard(action) {
+    if (!dirtyRecord.current) {
+      action();
+      return;
+    }
+    discardTrigger.current = document.activeElement;
+    setDiscardAction(() => action);
+  }
+  function keepEditing() {
+    setDiscardAction(null);
+    discardTrigger.current?.focus();
+  }
   const [previewStage, setPreviewStage] = useState(null);
   const previewInput = useRef(null);
   const hoverQuery = useRef(null);
@@ -769,6 +872,10 @@ export default function App() {
     };
   }, [state, session]);
   function navigate(v) {
+    if (v === view) return;
+    confirmDiscard(() => navigateDirect(v));
+  }
+  function navigateDirect(v) {
     clearPreview();
     setView(v);
     setTimeout(() => heading.current?.focus(), 0);
@@ -922,7 +1029,7 @@ export default function App() {
             </p>
             <button
               className="secondary"
-              onClick={() => window.location.reload()}
+              onClick={() => confirmDiscard(() => window.location.reload())}
             >
               Reload saved demo and discard this tab’s changes
             </button>
@@ -942,7 +1049,12 @@ export default function App() {
           />
         ) : view === "ledger" ? (
           <>
-            <Ledger state={state} setState={setState} />
+            <Ledger
+              state={state}
+              setState={setState}
+              confirmDiscard={confirmDiscard}
+              onDirtyChange={onDirtyRecordChange}
+            />
             <ConflictNotes state={state} />
             <div className="actions">
               <button className="primary" onClick={() => navigate("share")}>
@@ -972,6 +1084,16 @@ export default function App() {
           <span>AccessRoute / DSH Hacks V2</span>
         </footer>
       </main>
+      {discardAction ? (
+        <DiscardDraftDialog
+          onKeep={keepEditing}
+          onDiscard={() => {
+            const action = discardAction;
+            setDiscardAction(null);
+            action();
+          }}
+        />
+      ) : null}
       {reset ? (
         <ResetDialog
           sessionOnly={saveStatus === "conflict" || saveStatus === "session"}
@@ -981,7 +1103,7 @@ export default function App() {
             if (saveStatus === "session") sessionReset.current = true;
             setState(seed());
             setReset(false);
-            navigate("rehearsal");
+            navigateDirect("rehearsal");
           }}
         />
       ) : null}
