@@ -1,6 +1,18 @@
-import { KEY, load, seed } from "./model.js";
+import { KEY, load, seed, stages } from "./model.js";
 
 export const STORAGE_LOCK = `${KEY}.write`;
+
+// Navigation alone is recoverable; preferences, records and rehearsal work
+// are not. Canonical ordering also keeps equivalent progress from warning.
+export function workSnapshot(state) {
+  return JSON.stringify({
+    requests: state.requests,
+    visited: stages
+      .filter((stage) => state.visited.includes(stage.id))
+      .map((stage) => stage.id),
+    choices: stages.map((stage) => state.choices[stage.id] ?? null),
+  });
+}
 
 export function readDemoSession(storage) {
   try {
