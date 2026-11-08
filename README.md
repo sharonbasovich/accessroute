@@ -10,7 +10,7 @@ A short walkthrough:
 
 1. Open **Preferences** and edit a synthetic request.
 2. Choose **Rehearse visit**, select a practice response, and continue through the three stops.
-3. Open **Confirmation ledger** and record a fictional source and scope. Confirmations stay explicitly unverified.
+3. Open **Confirmation ledger**, choose **Update record**, and select **Self-recorded confirmation - unverified** as the status. Enter a fictional source and visit or area covered, then choose **Save record**.
 4. Open **Select & share**, choose only the requests you want included, and inspect the note before downloading or printing. Rehearsal answers are excluded.
 
 The browser demo includes the reviewed cross-tab storage, session-only reset and unsaved-record navigation fixes merged through [PR 6](https://github.com/sharonbasovich/accessroute/pull/6). The downloadable v0.2.1 below is an earlier fixed release and does not include those later fixes. Open draft changes are not part of the demo.
