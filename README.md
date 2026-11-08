@@ -2,9 +2,22 @@
 
 A patient-controlled, nonclinical accessibility visit rehearsal. This prototype uses synthetic fixtures only.
 
+## Try the browser demo
+
+[Open AccessRoute](https://sharonbasovich.github.io/accessroute/) with no account or installation. Use fictional details only. The static host may log ordinary web requests; app inputs stay in your browser.
+
+A short walkthrough:
+
+1. Open **Preferences** and edit a synthetic request.
+2. Choose **Rehearse visit**, select a practice response, and continue through the three stops.
+3. Open **Confirmation ledger**, choose **Update record**, and select **Self-recorded confirmation - unverified** as the status. Enter a fictional source and visit or area covered, then choose **Save record**.
+4. Open **Select & share**, choose only the requests you want included, and inspect the note before downloading or printing. Rehearsal answers are excluded.
+
+The browser demo includes the reviewed cross-tab storage, session-only reset and unsaved-record navigation fixes merged through [PR 6](https://github.com/sharonbasovich/accessroute/pull/6). The downloadable v0.2.1 below is an earlier fixed release and does not include those later fixes. Open draft changes are not part of the demo.
+
 ## Try the prototype locally
 
-Download the prototype release, extract it, and run `node serve.mjs` with Node 20.19+ or 22.12+. Open http://127.0.0.1:4173. The release includes a production build, so no dependency installation is needed to run it. The server listens only on loopback; stop it with Ctrl+C.
+Download the [v0.2.1 prototype ZIP and checksum](https://github.com/sharonbasovich/accessroute/releases/tag/v0.2.1), verify the checksum, extract it, and run `node serve.mjs` with Node 20.19+ or 22.12+. Open http://127.0.0.1:4173. The release includes a production build, so no dependency installation is needed to run it. The server listens only on loopback; stop it with Ctrl+C.
 
 To build from source:
 
@@ -16,11 +29,11 @@ npm start
 
 For development: `npm run dev`, then http://127.0.0.1:5173.
 
-## v0.2.1 fix release preparation
+## Published v0.2.1 release
 
-The current source rejects self-recorded evidence whose source or scope becomes empty after the same normalization used by preview and export. Meaningful multilingual text remains supported. Vite is pinned to 7.3.7, with refreshed dependency notices, and CI checks both the development server and the production static build. This metadata/docs revision adds no feature or interface change. See [release notes](docs/RELEASE-NOTES.md) and [validation evidence](docs/VALIDATION.md).
+The [v0.2.1 release](https://github.com/sharonbasovich/accessroute/releases/tag/v0.2.1) was published on October 28, 2026. It rejects self-recorded evidence whose source or scope becomes empty after the same normalization used by preview and export. Meaningful multilingual text remains supported. Vite is pinned to 7.3.7, with refreshed dependency notices. The release page records the checks run for that exact version; the [release notes](docs/RELEASE-NOTES.md) and [validation evidence](docs/VALIDATION.md) retain earlier preparation details.
 
-The v0.2.1 source is being prepared for a separate free prototype release; this change does not publish its ZIP or tag. The existing v0.1.0 and v0.2.0 releases remain unchanged.
+The v0.1.0, v0.2.0 and v0.2.1 downloads are preserved. Later main-branch and browser-demo fixes do not update those existing ZIPs.
 
 ## Rehearsal workspace introduced in v0.2.0
 
@@ -30,11 +43,11 @@ Existing screenshots or demo recordings made with v0.1.0 show the earlier interf
 
 See [release notes](docs/RELEASE-NOTES.md) and [validation notes](docs/VALIDATION.md).
 
-## Standalone static demo (planned)
+## Standalone static demo
 
-No public AccessRoute demo URL has been verified yet. A standalone static deployment is planned separately from this source update. The design and browser-only workflow are retained: no account, API, runtime secret or patient data is needed.
+The public demo is available at [sharonbasovich.github.io/accessroute](https://sharonbasovich.github.io/accessroute/). Its [build provenance](https://sharonbasovich.github.io/accessroute/provenance.json) identifies the hosted source separately from the preserved downloadable release. No account, API, runtime secret or patient data is needed.
 
-For a GitHub Pages project path, build separately with `npm run build -- --base=/accessroute/ --outDir ../accessroute-pages-build`. Serve that output at `/accessroute/`; do not upload the root-path local build unchanged there. Keep the normal `npm run build` output for the downloadable loopback prototype. A local subpath build passed the same 22 browser checks and six adversarial PDF cases with test entry URLs adapted to the project path. This is not evidence that a public deployment is live. Actual public assets, interaction and print privacy must be verified after deployment.
+For a GitHub Pages project path, build separately with `npm run build -- --base=/accessroute/ --outDir ../accessroute-pages-build`. Serve that output at `/accessroute/`; do not upload the root-path local build unchanged there. Keep the normal `npm run build` output for the downloadable loopback prototype. The historical local subpath build passed 22 browser checks and six adversarial PDF cases with test entry URLs adapted to the project path. Those counts apply to that earlier build, not every later revision. Verify public assets, interaction and print privacy after any new deployment.
 
 Static hosts do not run `serve.mjs` or automatically inherit its response headers. Hosting providers can log ordinary web requests; app inputs remain in the browser. Use synthetic details only. GitHub Pages projects under the same account share an origin and browser storage is unencrypted.
 
