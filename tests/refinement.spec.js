@@ -8,7 +8,7 @@ const arrival = (p) => nav(p).getByRole("button", { name: /Arrival/ });
 test("route preview is transient; hover, focus, interruption and activation stay separate", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page.getByRole("radio").first().check();
   await expect(page.locator(".local")).toHaveText("Saved on this browser");
   const before = await page.evaluate((k) => localStorage.getItem(k), key);
@@ -83,7 +83,7 @@ test("route preview is transient; hover, focus, interruption and activation stay
 test("preview cannot alter exported note or persist through workspace navigation", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page
     .getByRole("button", { name: "Select & share", exact: true })
     .click();
@@ -118,7 +118,7 @@ test("coarse touch has explicit stop selection and nearby expandable question", 
   });
   try {
     const p = await c.newPage();
-    await p.goto("/");
+    await p.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
     await waiting(p).tap();
     await expect(
       p.getByRole("heading", { name: "Make room for a calmer wait." }),
@@ -164,7 +164,7 @@ test("responsive viewport, native scroll navigation, selected contrast and page 
   const rows = [];
   for (const width of [320, 375, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/");
+    await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
     const resetTarget = await page
       .getByRole("button", { name: "Reset demo", exact: true })
       .boundingBox();

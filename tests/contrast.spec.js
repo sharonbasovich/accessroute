@@ -42,7 +42,7 @@ test("nested selected, hover, focus, question and error text retain measured con
     rows.push({ label, ...row });
     expect(row.ratio, label).toBeGreaterThanOrEqual(4.5);
   }
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page.getByRole("radio").first().check();
   await measure(".choice.selected span", "selected response");
   await page.locator(".choice").last().hover();

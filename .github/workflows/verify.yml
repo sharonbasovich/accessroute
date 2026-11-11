@@ -5,7 +5,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -26,7 +26,9 @@ jobs:
       - name: Verify production browser flows and PDFs
         run: |
           mv evidence evidence-development
-          mkdir -p evidence
+          mv output output-development
+          mv test-results test-results-development
+          mkdir -p evidence output/pdf
           node serve.mjs > /tmp/accessroute-production-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
@@ -38,6 +40,26 @@ jobs:
           ACCESSROUTE_TEST_URL=http://127.0.0.1:4173 npm run test:e2e
           python scripts/check-adversarial-pdfs.py
 
+      - name: Verify hosted subpath browser flows and PDFs
+        run: |
+          mv evidence evidence-production-root
+          mv output output-production-root
+          mv test-results test-results-production-root
+          mkdir -p evidence output/pdf
+          npm run build -- --base=/accessroute/ --outDir site/accessroute
+          cp LICENSE site/accessroute/
+          cp -R licenses site/accessroute/
+          python -m http.server 4174 --bind 127.0.0.1 --directory site > /tmp/accessroute-hosted.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4174/accessroute/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent --show-error http://127.0.0.1:4174/accessroute/ > /dev/null
+          ACCESSROUTE_TEST_URL=http://127.0.0.1:4174 ACCESSROUTE_ENTRY_PATH=/accessroute/ npm run test:e2e
+          python scripts/check-adversarial-pdfs.py
+
       - name: Retain browser verification evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,5 +68,11 @@ jobs:
           path: |
             evidence/
             evidence-development/
+            evidence-production-root/
+            output/
+            output-development/
+            output-production-root/
             test-results/
+            test-results-development/
+            test-results-production-root/
           retention-days: 7

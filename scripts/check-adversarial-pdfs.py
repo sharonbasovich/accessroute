@@ -2,9 +2,23 @@ from pathlib import Path
 from pypdf import PdfReader
 from pypdf.generic import IndirectObject
 import pymupdf,json,re
+expected = {
+ 'adversarial-print-Preferences.pdf',
+ 'adversarial-print-Confirmation-ledger.pdf',
+ 'adversarial-print-no-preview.pdf',
+ 'adversarial-selected.pdf',
+ 'adversarial-print-modal.pdf',
+ 'adversarial-unicode-maximum.pdf',
+}
+files = sorted(Path('evidence').glob('adversarial-*.pdf'))
+actual = {p.name for p in files}
+assert actual == expected, {
+ 'missing_adversarial_pdfs': sorted(expected - actual),
+ 'unexpected_adversarial_pdfs': sorted(actual - expected),
+}
 results={}
 private=['EXCLUDED_SENSORY_TOKEN','EXCLUDED_MOBILITY_TOKEN','EXCLUDED_SOURCE_TOKEN','EXCLUDED_SCOPE_TOKEN','Ask for a visual or written call in the quieter space.']
-for p in Path('evidence').glob('adversarial-*.pdf'):
+for p in files:
  r=PdfReader(p);text='\n'.join(x.extract_text() for x in r.pages);meta=repr(r.metadata);streams=b'\n'.join(x.get_contents().get_data() if x.get_contents() is not None else b'' for x in r.pages)
  for generation, offsets in r.xref.items():
   for number in offsets:

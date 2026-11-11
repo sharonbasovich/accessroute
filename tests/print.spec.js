@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 test("one-page print maximum supported fields and selected-only content", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page.getByRole("button", { name: "Preferences", exact: true }).click();
   for (const id of ["communication", "sensory", "mobility"])
     await page
