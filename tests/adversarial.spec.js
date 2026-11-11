@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import { seed, stages, KEY } from "../src/model.js";
 async function install(page, state) {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await expect(page.locator(".local")).toHaveText("Saved on this browser");
   await page.evaluate(
     ({ state, key }) => localStorage.setItem(key, JSON.stringify(state)),
@@ -152,7 +152,7 @@ test("maximum unicode fields remain one page; empty selection stays disabled", a
 test("rapid stage navigation and repeated finish never manufacture completed stops", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page.getByRole("button", { name: /3 Consultation/ }).click();
   await page.getByRole("radio").first().check();
   await page.getByRole("button", { name: "Finish rehearsal" }).click();
@@ -190,7 +190,7 @@ test("canonical control-only request cannot be selected or previewed", async ({
 test("control-only evidence cannot be saved; corrected multilingual evidence survives export and reload", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await page
     .getByRole("button", { name: "Confirmation ledger", exact: true })
     .click();

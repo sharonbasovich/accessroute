@@ -36,7 +36,7 @@ import {
   noteText,
   affectedStagesByRequestId,
 } from "./model";
-import { readDemoSession, persistDemo } from "./persistence";
+import { readDemoSession, persistDemo, workSnapshot } from "./persistence";
 function readState() {
   try {
     return readDemoSession(window.localStorage);
@@ -367,8 +367,7 @@ function Rehearsal({ state, setState, onLedger, previewStage }) {
                     ”
                   </p>
                   <small>
-                    Practice choice kept in this tab; excluded from your share
-                    note.
+                    Practice choices are excluded from your share note.
                   </small>
                 </div>
               </div>
@@ -737,10 +736,22 @@ export default function App() {
   const [session] = useState(readState);
   const [state, setState] = useState(session.state);
   const savedSnapshot = useRef(session.snapshot);
+  const savedWork = useRef(workSnapshot(session.state));
   const storageConflict = useRef(false);
   const sessionReset = useRef(false);
   const [view, setView] = useState("rehearsal");
   const [saveStatus, setSaveStatus] = useState("saving");
+  const currentWork = workSnapshot(state);
+  const unsavedWork = currentWork !== savedWork.current;
+  useLayoutEffect(() => {
+    if (!unsavedWork) return;
+    const warn = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [unsavedWork]);
   const [reset, setReset] = useState(false);
   const dirtyRecord = useRef(false);
   const onDirtyRecordChange = useCallback((value) => {
@@ -850,6 +861,7 @@ export default function App() {
           isCurrent: () => current && !storageConflict.current,
           onSaved: (snapshot) => {
             savedSnapshot.current = snapshot;
+            savedWork.current = workSnapshot(state);
           },
         });
         if (!current || result.kind === "cancelled" || storageConflict.current)
