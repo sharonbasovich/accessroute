@@ -2,10 +2,10 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "57e688003a64fa336365e40c3021baebcfdb2ea7",
-  "build_command": "npm run build -- --base=/accessroute/ --outDir site/accessroute",
+  "source_commit": "b17638dd5d908c93a4bd5908de2b29fa84cee538",
+  "build_command": "npm run build -- --base=/accessroute/ --outDir ../site/accessroute",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
-  "source_release": "Historical v0.2.1 release unchanged; this deployment adds reviewed unsaved ledger navigation protection.",
-  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/41528141950"
+  "source_release": "Historical v0.2.1 release unchanged; this deployment corrects the practice-choice disclosure caption after reviewed browser-storage safety updates.",
+  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/42983276330"
 }
