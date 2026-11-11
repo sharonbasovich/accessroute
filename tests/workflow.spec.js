@@ -6,12 +6,32 @@ test.beforeEach(async ({ page }) => {
 });
 test("interrupted and repeated rehearsal persists without duplicate progress", async ({
   page,
+  context,
 }) => {
   await expect(
     page.getByRole("button", { name: "Save & continue" }),
   ).toBeDisabled();
   await page.getByRole("radio").first().check();
   await expect(page.locator(".local")).toHaveText("Saved on this browser");
+  await expect(page.locator(".practice small")).toHaveText(
+    "Practice choices are excluded from your share note.",
+  );
+  // Choosing already saves: a fresh tab restores it before Save & continue.
+  const restored = await context.newPage();
+  await restored.goto("/");
+  await expect(restored.getByRole("radio").first()).toBeChecked();
+  await expect(restored.locator(".progress-ring")).toHaveText("0/3");
+  await expect(restored.locator(".practice small")).toHaveText(
+    "Practice choices are excluded from your share note.",
+  );
+  await restored.getByRole("button", { name: "Select & share" }).click();
+  await restored.getByRole("checkbox").first().check();
+  await restored.getByRole("button", { name: "Preview selected note" }).click();
+  await expect(restored.locator("#export-note")).not.toContainText(
+    "Ask where the step-free entrance is and when it opens.",
+  );
+  await expect(restored.locator("#export-note")).not.toContainText("Could you");
+  await restored.close();
   await page.reload();
   await expect(page.getByRole("radio").first()).toBeChecked();
   await page.getByRole("button", { name: "Save & continue" }).click();
@@ -147,6 +167,9 @@ test("storage failures retain usable session with explicit warning", async ({
   await p.goto("/");
   await expect(p.getByRole("alert")).toContainText("only for this session");
   await p.getByRole("radio").first().check();
+  await expect(p.locator(".practice small")).toHaveText(
+    "Practice choices are excluded from your share note.",
+  );
   await expect(
     p.getByRole("button", { name: "Save & continue" }),
   ).toBeEnabled();

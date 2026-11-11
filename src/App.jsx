@@ -367,8 +367,7 @@ function Rehearsal({ state, setState, onLedger, previewStage }) {
                     ”
                   </p>
                   <small>
-                    Practice choice kept in this tab; excluded from your share
-                    note.
+                    Practice choices are excluded from your share note.
                   </small>
                 </div>
               </div>
