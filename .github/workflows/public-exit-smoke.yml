@@ -1,0 +1,32 @@
+name: Public deployed exit smoke
+on:
+  push:
+    branches: [test/public-exit-smoke-20261111-1427]
+permissions:
+  contents: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-24.04
+    # Keep the official image aligned with the locked Playwright version.
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node scripts/public-exit-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessroute-public-exit-smoke-evidence
+          path: evidence/public-exit-smoke/
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,46 @@
+{
+  "ready": true,
+  "baseURL": "https://sharonbasovich.github.io/accessroute/",
+  "sourceCommit": "d80c8c7d0444c8ae9bf103e9f05878a09ce8a285",
+  "sourceTree": "845de644796a8f7a8bc36ca230065a27ba6c1727",
+  "deploymentCommit": "61a0dcabcc833ae6a785c8d3ee521293d42c5dde",
+  "provenanceFile": "provenance.json",
+  "files": {
+    "index.html": {
+      "size": 440,
+      "sha256": "e245886103a855b56b02cbef1f8f2f15f616bd5363ba6675ad0a13ac3ddfa215",
+      "mime": [
+        "text/html"
+      ]
+    },
+    "assets/index-B8jlmgjT.js": {
+      "size": 225832,
+      "sha256": "74753c0ea1380b05c8391d740d9c1ccd0c49509beb8b8adcf18b87271ada3bee",
+      "mime": [
+        "application/javascript",
+        "text/javascript"
+      ]
+    },
+    "assets/index-CAtRD6i_.css": {
+      "size": 17436,
+      "sha256": "71bc200d0b995c5e2f1ef4acb145498dcd03e39071208aa83d340019b06c21d3",
+      "mime": [
+        "text/css"
+      ]
+    },
+    "provenance.json": {
+      "size": 857,
+      "sha256": "68f4a340f529bc5d5189323ebfbcb09236f4d6a2d93879505605a2b617b852c9",
+      "mime": [
+        "application/json"
+      ]
+    },
+    "artifact-manifest.json": {
+      "size": 2654,
+      "sha256": "2a9d2823c4b5e09023cb0fa44a232644296983a86fb95211be0a2300b5d81072",
+      "mime": [
+        "application/json"
+      ]
+    }
+  }
+}
