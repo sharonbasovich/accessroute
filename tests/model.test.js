@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   seed,
+  labels,
   updateRequest,
   shareText,
   load,
@@ -252,6 +253,18 @@ test("evidence presence preserves meaningful joiners and combining text through 
       const exported = shareText(restored, ["communication"]);
       assert.ok(exported.includes("Recorded source: " + text));
       assert.ok(exported.includes("Scope: " + text));
+    }
+  }
+});
+
+test('restore rejects non-string statuses even when property-key coercion matches a label', () => {
+  for (const label of Object.keys(labels)) {
+    for (const status of [[label], [[label]], [[[label]]]]) {
+      for (const evidence of [{source:'',scope:''},{source:'Synthetic source',scope:'Synthetic scope'}]) {
+        const state=seed();
+        Object.assign(state.requests[0], {text:'Synthetic changed request',status,...evidence});
+        assert.deepEqual(load({getItem:()=>JSON.stringify(state)}),seed());
+      }
     }
   }
 });

@@ -190,6 +190,7 @@ export function load(storage) {
         !x ||
         typeof x.text !== "string" ||
         x.text.length > 180 ||
+        typeof x.status !== "string" ||
         !Object.hasOwn(labels, x.status) ||
         typeof x.source !== "string" ||
         typeof x.scope !== "string" ||
