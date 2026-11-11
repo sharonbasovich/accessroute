@@ -15,10 +15,12 @@ async function preferences(page) {
 async function failSaving(page) {
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
+    window.failedSaveAttempts = 0;
     window.restoreStorage = () => {
       Storage.prototype.setItem = original;
     };
     Storage.prototype.setItem = () => {
+      window.failedSaveAttempts++;
       throw new DOMException("Full", "QuotaExceededError");
     };
   });
@@ -115,4 +117,97 @@ for (const failure of ["unsupported", "rejected"])
       .getByRole("button", { name: "Reset demo data", exact: true })
       .click();
     expect(await warns(page)).toBe(false);
+  });
+
+// Native dialog coverage: synthetic beforeunload dispatch above is not a
+// substitute for the browser's real Cancel/Leave behavior.
+async function reloadWithoutDialog(page) {
+  const dialogs = [];
+  const unexpected = async (dialog) => {
+    dialogs.push(dialog.type());
+    await dialog.accept(); // Unblock the reload, then fail the explicit assertion.
+  };
+  page.on("dialog", unexpected);
+  try {
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.locator(".local")).toHaveText("Saved on this browser");
+    expect(dialogs, "clean work must reload without a native warning").toEqual(
+      [],
+    );
+  } finally {
+    page.off("dialog", unexpected);
+  }
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+}
+
+test("native repeated Cancel retains failed-save work and Leave restores persisted work", async ({
+  page,
+}) => {
+  await preferences(page);
+  const persisted = await page.locator("#communication").inputValue();
+  const savedCopy = await page.evaluate(
+    (key) => localStorage.getItem(key),
+    KEY,
+  );
+  await failSaving(page);
+  await page.locator("#communication").fill("SYNTHETIC NATIVE UNSAVED WORK");
+  await expect(page.locator(".local")).toHaveText("Session only");
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const dialogPromise = page.waitForEvent("dialog");
+    await page.evaluate(() => setTimeout(() => location.reload(), 0));
+    const dialog = await dialogPromise;
+    expect(dialog.type()).toBe("beforeunload");
+    await dialog.dismiss();
+    await expect(page.locator("#communication")).toHaveValue(
+      "SYNTHETIC NATIVE UNSAVED WORK",
+    );
+    await expect(page.locator(".local")).toHaveText("Session only");
+    expect(await page.evaluate((key) => localStorage.getItem(key), KEY)).toBe(
+      savedCopy,
+    );
+  }
+  const dialogPromise = page.waitForEvent("dialog");
+  const reloaded = page.waitForNavigation({ waitUntil: "domcontentloaded" });
+  await page.evaluate(() => setTimeout(() => location.reload(), 0));
+  const dialog = await dialogPromise;
+  expect(dialog.type()).toBe("beforeunload");
+  await dialog.accept();
+  await reloaded;
+  await expect(page.locator(".local")).toHaveText("Saved on this browser");
+  await page.getByRole("button", { name: "Preferences", exact: true }).click();
+  await expect(page.locator("#communication")).toHaveValue(persisted);
+  expect(await page.evaluate((key) => localStorage.getItem(key), KEY)).toBe(
+    savedCopy,
+  );
+});
+
+for (const resolution of ["recovery", "exact revert"])
+  test(`native reload after ${resolution} is warning-free and retains saved work`, async ({
+    page,
+  }) => {
+    await preferences(page);
+    const persisted = await page.locator("#communication").inputValue();
+    await failSaving(page);
+    await page
+      .locator("#communication")
+      .fill("SYNTHETIC NATIVE TEMPORARY WORK");
+    await expect(page.locator(".local")).toHaveText("Session only");
+    expect(await warns(page)).toBe(true);
+    let expected = persisted;
+    if (resolution === "recovery") {
+      await page.evaluate(() => window.restoreStorage());
+      expected = "SYNTHETIC NATIVE RECOVERED WORK";
+      await page.locator("#communication").fill(expected);
+      await expect(page.locator(".local")).toHaveText("Saved on this browser");
+    } else {
+      const attempts = await page.evaluate(() => window.failedSaveAttempts);
+      await page.locator("#communication").fill(persisted);
+      await expect
+        .poll(() => page.evaluate(() => window.failedSaveAttempts))
+        .toBeGreaterThan(attempts);
+      await expect(page.locator(".local")).toHaveText("Session only");
+    }
+    expect(await warns(page)).toBe(false);
+    await reloadWithoutDialog(page);
+    await expect(page.locator("#communication")).toHaveValue(expected);
   });

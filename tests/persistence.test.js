@@ -87,6 +87,10 @@ test("read, write, and lock failures safely report session mode", async () => {
   for (const failure of ["read", "write", "lock"]) {
     const storage = fixture(),
       a = args(storage);
+    let saved = 0;
+    a.onSaved = () => {
+      saved++;
+    };
     if (failure === "read")
       storage.getItem = () => {
         throw Error("blocked");
@@ -98,6 +102,11 @@ test("read, write, and lock failures safely report session mode", async () => {
     if (failure === "lock")
       a.locks = { request: () => Promise.reject(Error("unavailable")) };
     assert.equal((await persistDemo(a)).kind, "session");
+    assert.equal(
+      saved,
+      0,
+      "failed persistence must not advance the saved marker",
+    );
   }
 });
 test("initial storage failure is distinguished from valid empty storage", () => {
