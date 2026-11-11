@@ -1,0 +1,51 @@
+{
+  "ready": true,
+  "baseURL": "https://sharonbasovich.github.io/accessroute/",
+  "reviewedCandidate": {
+    "draftCommit": "71a7bb75231923bfa43bff09ff43566d62dfd5fb",
+    "sourceTree": "96cec3ef9b7065762f4e40a7b4bea0b592e4e2f0"
+  },
+  "sourceCommit": "1cff02c8ff5a91cd230a6f7b3cb5c2473d2987d6",
+  "sourceTree": "96cec3ef9b7065762f4e40a7b4bea0b592e4e2f0",
+  "deploymentCommit": "34e5e93b2fcf599c7bbb9e7f591055cc3e61836b",
+  "provenanceFile": "provenance.json",
+  "files": {
+    "index.html": {
+      "size": 440,
+      "sha256": "d07c5c3b329cd5bdf1d739c952df01fe1784e96fa314fa87a47cb9e302ea1469",
+      "mime": [
+        "text/html"
+      ]
+    },
+    "assets/index-wFtn3EsH.js": {
+      "size": 225859,
+      "sha256": "0409a8d6043b620aa4ddabd714997445bbea90cafdb88f74ffacdd755b1c8554",
+      "mime": [
+        "application/javascript",
+        "text/javascript"
+      ]
+    },
+    "assets/index-CAtRD6i_.css": {
+      "size": 17436,
+      "sha256": "71bc200d0b995c5e2f1ef4acb145498dcd03e39071208aa83d340019b06c21d3",
+      "mime": [
+        "text/css"
+      ]
+    },
+    "provenance.json": {
+      "size": 940,
+      "sha256": "978a65869e4c640cb260f5bf348f46a5c94e440912596cf101b57c8484953581",
+      "mime": [
+        "application/json"
+      ]
+    },
+    "artifact-manifest.json": {
+      "size": 2805,
+      "sha256": "bc1e3e22a31ebfc5041c88fb7658bdb9779d61f6aaae5afe8666efc0fb969290",
+      "mime": [
+        "application/json"
+      ]
+    }
+  },
+  "activation": "Active pins derive from the independently reviewed final deployment artifact after exact Pages commit/run verification. Runtime preflight verifies actual public responses before browser execution."
+}

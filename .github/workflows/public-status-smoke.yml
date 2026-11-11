@@ -1,0 +1,46 @@
+name: Public deployed saved-status smoke
+on:
+  push:
+    branches: [test/public-status-smoke-20261111-1507]
+permissions:
+  contents: read
+jobs:
+  public-status-smoke:
+    runs-on: ubuntu-24.04
+    # Official browser image matches the repository's locked Playwright version.
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Check reviewed deployment activation
+        id: activation
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const manifest = JSON.parse(readFileSync('scripts/public-status-expected.json', 'utf8'));
+          appendFileSync(process.env.GITHUB_OUTPUT, `ready=${manifest.ready === true}\n`);
+          if (manifest.ready !== true) console.log('Inactive deployment template: no install, network smoke, or browser run. This is not an acceptance pass.');
+          JS
+      - name: Install locked test dependencies without lifecycle scripts
+        if: steps.activation.outputs.ready == 'true'
+        run: npm ci --ignore-scripts
+      - name: Check actual public deployment
+        id: smoke
+        if: steps.activation.outputs.ready == 'true'
+        run: node scripts/public-status-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.smoke.outputs.artifact-directory != ''
+        with:
+          name: accessroute-public-status-smoke-evidence
+          path: ${{ steps.smoke.outputs.artifact-directory }}/
+          retention-days: 7
+          if-no-files-found: error

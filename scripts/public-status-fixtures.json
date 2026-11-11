@@ -1,0 +1,68 @@
+{
+  "seed": {
+    "version": 1,
+    "active": "arrival",
+    "visited": [],
+    "choices": {},
+    "requests": [
+      {
+        "id": "communication",
+        "category": "Communication",
+        "text": "Please give me key information in writing.",
+        "status": "requested",
+        "source": "",
+        "scope": ""
+      },
+      {
+        "id": "sensory",
+        "category": "Sensory",
+        "text": "I would like a quieter place to wait.",
+        "status": "unconfirmed",
+        "source": "",
+        "scope": ""
+      },
+      {
+        "id": "mobility",
+        "category": "Mobility",
+        "text": "I need a step-free route to the consultation room.",
+        "status": "unconfirmed",
+        "source": "",
+        "scope": ""
+      }
+    ]
+  },
+  "seedNote": "AccessRoute | Visit preferences\nSynthetic rehearsal example. Nonclinical; no clinic availability is verified.\nSelected by the person preparing this note. Requests are not guarantees.\n\nCommunication\nPlease give me key information in writing.\nMy request\n\nPlease discuss what is possible for this visit.",
+  "valid": {
+    "version": 1,
+    "active": "arrival",
+    "visited": [],
+    "choices": {},
+    "requests": [
+      {
+        "id": "communication",
+        "category": "Communication",
+        "text": "SYNTHETIC VALID REQUEST",
+        "status": "confirmed",
+        "source": "SYNTHETIC VALID SOURCE",
+        "scope": "SYNTHETIC VALID SCOPE"
+      },
+      {
+        "id": "sensory",
+        "category": "Sensory",
+        "text": "I would like a quieter place to wait.",
+        "status": "unconfirmed",
+        "source": "",
+        "scope": ""
+      },
+      {
+        "id": "mobility",
+        "category": "Mobility",
+        "text": "I need a step-free route to the consultation room.",
+        "status": "unconfirmed",
+        "source": "",
+        "scope": ""
+      }
+    ]
+  },
+  "validNote": "AccessRoute | Visit preferences\nSynthetic rehearsal example. Nonclinical; no clinic availability is verified.\nSelected by the person preparing this note. Requests are not guarantees.\n\nCommunication\nSYNTHETIC VALID REQUEST\nSelf-recorded confirmation - unverified\nRecorded source: SYNTHETIC VALID SOURCE\nScope: SYNTHETIC VALID SCOPE\n\nPlease discuss what is possible for this visit."
+}
