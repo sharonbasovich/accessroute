@@ -55,9 +55,14 @@
     "sha256": "e6e35db27ee5ee63614eff02a9310d32b8475cccbd4bad92c0de360018fca1a7"
   },
   {
+    "path": "assets/index-wFtn3EsH.js",
+    "bytes": 225859,
+    "sha256": "0409a8d6043b620aa4ddabd714997445bbea90cafdb88f74ffacdd755b1c8554"
+  },
+  {
     "path": "index.html",
     "bytes": 440,
-    "sha256": "e245886103a855b56b02cbef1f8f2f15f616bd5363ba6675ad0a13ac3ddfa215"
+    "sha256": "d07c5c3b329cd5bdf1d739c952df01fe1784e96fa314fa87a47cb9e302ea1469"
   },
   {
     "path": "licenses/THIRD-PARTY-NOTICES.md",
@@ -86,7 +91,7 @@
   },
   {
     "path": "provenance.json",
-    "bytes": 857,
-    "sha256": "68f4a340f529bc5d5189323ebfbcb09236f4d6a2d93879505605a2b617b852c9"
+    "bytes": 940,
+    "sha256": "978a65869e4c640cb260f5bf348f46a5c94e440912596cf101b57c8484953581"
   }
 ]

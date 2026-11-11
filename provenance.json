@@ -2,13 +2,14 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "d80c8c7d0444c8ae9bf103e9f05878a09ce8a285",
-  "build_command": "npm run build -- --base=/accessroute/ --outDir ../build-a",
+  "source_commit": "1cff02c8ff5a91cd230a6f7b3cb5c2473d2987d6",
+  "build_command": "npm run build -- --base=/accessroute/ --outDir site/accessroute",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
-  "source_release": "Historical v0.2.1 release unchanged; this deployment adds reviewed PR #7 session-exit safety while retaining the practice-choice disclosure caption. PR #9 schema changes are excluded.",
-  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/43040152710",
-  "source_tree": "845de644796a8f7a8bc36ca230065a27ba6c1727",
+  "source_release": "Historical v0.2.1 release unchanged; this deployment adds reviewed PR #9 saved-status type validation while retaining PR #7 session-exit safety and the practice-choice disclosure caption.",
+  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/43047142858",
+  "source_tree": "96cec3ef9b7065762f4e40a7b4bea0b592e4e2f0",
   "reviewed_pr_head": "f716605cbfe3e3c9d78129e552da9577f3a4a497",
-  "reviewed_ci_pr_head": "6bbd3df851d1d790225155a274fbd681e9fb070d"
+  "reviewed_ci_pr_head": "6bbd3df851d1d790225155a274fbd681e9fb070d",
+  "reviewed_status_pr_head": "71a7bb75231923bfa43bff09ff43566d62dfd5fb"
 }
