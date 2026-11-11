@@ -2,10 +2,13 @@
   "project": "AccessRoute",
   "version": "0.2.1",
   "source_repository": "https://github.com/sharonbasovich/accessroute",
-  "source_commit": "b17638dd5d908c93a4bd5908de2b29fa84cee538",
-  "build_command": "npm run build -- --base=/accessroute/ --outDir ../site/accessroute",
+  "source_commit": "d80c8c7d0444c8ae9bf103e9f05878a09ce8a285",
+  "build_command": "npm run build -- --base=/accessroute/ --outDir ../build-a",
   "deployment_base": "/accessroute/",
   "kind": "Synthetic nonclinical static prototype",
-  "source_release": "Historical v0.2.1 release unchanged; this deployment corrects the practice-choice disclosure caption after reviewed browser-storage safety updates.",
-  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/42983276330"
+  "source_release": "Historical v0.2.1 release unchanged; this deployment adds reviewed PR #7 session-exit safety while retaining the practice-choice disclosure caption. PR #9 schema changes are excluded.",
+  "verification_run": "https://github.com/sharonbasovich/accessroute/actions/runs/43040152710",
+  "source_tree": "845de644796a8f7a8bc36ca230065a27ba6c1727",
+  "reviewed_pr_head": "f716605cbfe3e3c9d78129e552da9577f3a4a497",
+  "reviewed_ci_pr_head": "6bbd3df851d1d790225155a274fbd681e9fb070d"
 }
