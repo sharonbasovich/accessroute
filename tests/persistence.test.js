@@ -87,6 +87,10 @@ test("read, write, and lock failures safely report session mode", async () => {
   for (const failure of ["read", "write", "lock"]) {
     const storage = fixture(),
       a = args(storage);
+    let saved = 0;
+    a.onSaved = () => {
+      saved++;
+    };
     if (failure === "read")
       storage.getItem = () => {
         throw Error("blocked");
@@ -98,6 +102,11 @@ test("read, write, and lock failures safely report session mode", async () => {
     if (failure === "lock")
       a.locks = { request: () => Promise.reject(Error("unavailable")) };
     assert.equal((await persistDemo(a)).kind, "session");
+    assert.equal(
+      saved,
+      0,
+      "failed persistence must not advance the saved marker",
+    );
   }
 });
 test("initial storage failure is distinguished from valid empty storage", () => {
@@ -110,4 +119,46 @@ test("initial storage failure is distinguished from valid empty storage", () => 
     false,
   );
   assert.equal(readDemoSession({ getItem: () => null }).readable, true);
+});
+
+test("work snapshot tracks meaningful work but ignores navigation and ordering", async () => {
+  const { workSnapshot } = await import("../src/persistence.js");
+  const initial = seed();
+  const baseline = workSnapshot(initial);
+  assert.equal(workSnapshot({ ...initial, active: "waiting" }), baseline);
+  for (const change of [
+    (state) => {
+      state.requests[0].text = "SYNTHETIC NEW REQUEST";
+    },
+    (state) => {
+      state.requests[0].status = "unconfirmed";
+    },
+    (state) => {
+      state.requests[0].source = "SYNTHETIC SOURCE";
+    },
+    (state) => {
+      state.requests[0].scope = "SYNTHETIC SCOPE";
+    },
+    (state) => {
+      state.choices.arrival = "SYNTHETIC CHOICE";
+    },
+    (state) => {
+      state.visited.push("arrival");
+    },
+  ]) {
+    const changed = structuredClone(initial);
+    change(changed);
+    assert.notEqual(workSnapshot(changed), baseline);
+  }
+  const a = {
+    ...initial,
+    visited: ["waiting", "arrival"],
+    choices: { waiting: "B", arrival: "A" },
+  };
+  const b = {
+    ...initial,
+    visited: ["arrival", "waiting", "arrival"],
+    choices: { arrival: "A", waiting: "B" },
+  };
+  assert.equal(workSnapshot(a), workSnapshot(b));
 });

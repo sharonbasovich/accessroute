@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import fs from "node:fs/promises";
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
 });
 test("interrupted and repeated rehearsal persists without duplicate progress", async ({
   page,
@@ -18,7 +18,7 @@ test("interrupted and repeated rehearsal persists without duplicate progress", a
   );
   // Choosing already saves: a fresh tab restores it before Save & continue.
   const restored = await context.newPage();
-  await restored.goto("/");
+  await restored.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await expect(restored.getByRole("radio").first()).toBeChecked();
   await expect(restored.locator(".progress-ring")).toHaveText("0/3");
   await expect(restored.locator(".practice small")).toHaveText(
@@ -164,7 +164,7 @@ test("storage failures retain usable session with explicit warning", async ({
     });
   });
   const p = await context.newPage();
-  await p.goto("/");
+  await p.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   await expect(p.getByRole("alert")).toContainText("only for this session");
   await p.getByRole("radio").first().check();
   await expect(p.locator(".practice small")).toHaveText(
@@ -230,7 +230,7 @@ test("no third party network, HTML is escaped, maximum note stays bounded", asyn
 }) => {
   const outbound = [];
   page.on("request", (r) => {
-    if (!r.url().startsWith("http://127.0.0.1:5173")) outbound.push(r.url());
+    if (new URL(r.url()).origin !== new URL(process.env.ACCESSROUTE_TEST_URL || "http://127.0.0.1:5173").origin) outbound.push(r.url());
   });
   await page.getByRole("button", { name: "Preferences", exact: true }).click();
   await page.locator("#communication").fill('<script>alert("x")</script>');

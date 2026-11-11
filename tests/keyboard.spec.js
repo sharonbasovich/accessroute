@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 test("keyboard rehearsal advances focus and native radio choice", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(process.env.ACCESSROUTE_ENTRY_PATH || "/");
   const first = page.getByRole("radio").first();
   await first.focus();
   await page.keyboard.press("Space");
